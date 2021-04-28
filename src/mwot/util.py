@@ -3,6 +3,16 @@
 import itertools
 
 
+def chop(it, size):
+    """Chop an iterable into chunks of length ``size``.
+
+    Also yields the remainder chunk.
+    """
+    it = iter(it)
+    while chunk := tuple(itertools.islice(it, size)):
+        yield chunk
+
+
 def deshebang(chars, strtype=str):
     """Remove a leading shebang line."""
     if strtype is str:
