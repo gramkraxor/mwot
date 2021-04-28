@@ -29,8 +29,8 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'mwot = mwot.cli:main',
-            'mwotib = mwot.cli:mwot_ib',
-            'mwotxb = mwot.cli:mwot_xb',
+            'mwot-i-bf = mwot.cli:mwot_i_bf',
+            'mwot-x-bf = mwot.cli:mwot_x_bf',
         ],
     },
 )

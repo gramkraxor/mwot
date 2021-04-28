@@ -6,4 +6,4 @@ def main():
     sys.exit(1)
 
 
-mwot_ib = mwot_xb = main
+mwot_i_bf = mwot_x_bf = main
