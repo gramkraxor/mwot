@@ -3,3 +3,6 @@ class MWOTError(Exception):
 
 class CompilerError(MWOTError):
     """Error while transpiling."""
+
+class InterpreterError(MWOTError):
+    """Error while running code."""

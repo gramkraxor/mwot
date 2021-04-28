@@ -3,7 +3,7 @@ __version__ = '0.0.0.dev0'
 from . import binary
 from . import brainfuck
 from .compiler import mwot_to_bits
-from .exceptions import CompilerError, MWOTError
+from .exceptions import CompilerError, InterpreterError, MWOTError
 
 
 def mwot_to_bf(mwot):

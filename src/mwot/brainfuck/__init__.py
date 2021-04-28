@@ -36,3 +36,6 @@ def to_bits(chars):
     """Convert a string of brainfuck to a chain of MWOT bits."""
     for cmd in chars:
         yield from chunkmap.get(cmd, ())
+
+
+from . import interpreter

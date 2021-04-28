@@ -1,0 +1,121 @@
+"""Run brainfuck."""
+
+from collections import defaultdict
+import sys
+
+from ..compiler import mwot_to_bits
+from ..exceptions import InterpreterError
+from ..util import decode, deshebang
+from . import cmds, from_bits as bits_to_bf
+
+cmds_str = cmds.decode('ascii')
+
+
+def clean_bf(chars):
+    """Remove non-brainfuck characters from a string."""
+    for char in chars:
+        if char in cmds_str:
+            yield char
+
+
+def run_mwot(mwot, **options):
+    """Compile MWOT to brainfuck and execute it."""
+    run(bits_to_bf(mwot_to_bits(mwot)), shebang_in=False, **options)
+
+
+def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
+        cellsize=8, eof=None, shebang_in=True, totalcells=30_000,
+        wrapover=True):
+    """Run brainfuck code.
+
+    I/O is done in ``bytes``, not ``str``.
+
+    Implementation options:
+        cellsize: Size of each cell, in bits. Can be falsy for no limit.
+        eof: What to do for input after EOF. Can be a fill value to read
+            in or None for "no change".
+        shebang_in: Whether a leading shebang will be recognized and
+            ignored.
+        totalcells: Number of cells. Can be falsy for dynamic size.
+        wrapover: Whether to overflow instead of error when the pointer
+            goes out of bounds. Also determines whether "dynamic size"
+            includes negative indices.
+    """
+    memory = [0] * totalcells if totalcells else defaultdict(lambda: 0)
+    pc = 0
+    pointer = 0
+
+    brainfuck = decode(brainfuck)
+    if shebang_in:
+        brainfuck = deshebang(brainfuck)
+    brainfuck = ''.join(clean_bf(brainfuck))
+    jumps = get_jumps(brainfuck)
+
+    def shift(by):
+        nonlocal pointer
+        pointer += by
+        if wrapover:
+            if totalcells:
+                pointer %= totalcells
+        elif pointer < 0 or (totalcells and pointer >= totalcells):
+            raise InterpreterError(f'pointer out of range: {pointer}')
+
+    def increment(by):
+        if cellsize and cellsize > 0:
+            memory[pointer] = (memory[pointer] + by) % (1 << cellsize)
+        else:
+            memory[pointer] += by
+
+    def write():
+        outfile.write(bytes((memory[pointer] % 256,)))
+        outfile.flush()
+
+    def read():
+        char = infile.read(1)
+        if char:
+            memory[pointer] = char[0]
+        elif eof is not None:
+            memory[pointer] = eof
+
+    def loop():
+        nonlocal pc
+        if not memory[pointer]:
+            pc = jumps[pc]
+
+    def end():
+        nonlocal pc
+        if memory[pointer]:
+            pc = jumps[pc]
+
+    instruction_map = {
+        '>': lambda: shift(1),
+        '<': lambda: shift(-1),
+        '+': lambda: increment(1),
+        '-': lambda: increment(-1),
+        '.': write,
+        ',': read,
+        '[': loop,
+        ']': end,
+    }
+
+    while pc < len(brainfuck):
+        instruction_map[brainfuck[pc]]()
+        pc += 1
+
+
+def get_jumps(brainfuck):
+    """Match brackets and map their positions to each other."""
+    stack = []
+    jumps = {}
+    for pc, cmd in enumerate(brainfuck):
+        if cmd == '[':
+            stack.append(pc)
+        elif cmd == ']':
+            try:
+                target = stack.pop()
+            except IndexError:
+                raise InterpreterError("unmatched ']'") from None
+            jumps[target], jumps[pc] = pc, target
+    if stack:
+        raise InterpreterError("unmatched '['")
+    return jumps
