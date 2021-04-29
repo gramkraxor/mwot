@@ -40,4 +40,4 @@ def bf_from_mwot(mwot):
 
 def binary_from_mwot(mwot):
     """Convert MWOT source to binary."""
-    return bytes.from_bits(bits_from_mwot(mwot))
+    return binary.from_bits(bits_from_mwot(mwot))
