@@ -1,5 +1,6 @@
 """General functions, etc."""
 
+from functools import wraps
 import itertools
 
 ascii_range = range(128)
@@ -14,6 +15,25 @@ def chop(it, size):
     it = iter(it)
     while chunk := tuple(itertools.islice(it, size)):
         yield chunk
+
+
+def collectable(seq_type=list):
+    """Decorator for iterable functions to add a collect option.
+
+    Defining a function with `@collectable(str)` makes
+    `fn(..., collect=True)` equivalent to `''.join(fn(...))`.
+    """
+    collector_map = {str: ''.join}
+    collector = collector_map.get(seq_type, seq_type)
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, collect=False, **kwargs):
+            returned = f(*args, **kwargs)
+            if collect:
+                return collector(returned)
+            return returned
+        return wrapper
+    return decorator
 
 
 def decode(chars, ensure=True):

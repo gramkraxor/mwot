@@ -13,7 +13,7 @@ Instructions are mapped to bits in the following order:
 
 import itertools
 from ..exceptions import CompilerError
-from ..util import chop
+from ..util import chop, collectable
 
 cmds = b'><+-.,[]'
 allchunks = tuple(itertools.product((0, 1), repeat=3))  # 000 001 ...
@@ -23,6 +23,7 @@ hello_world = (b'++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.++++'
                b'+++..+++.>>.<-.<.+++.------.--------.>>+.>++.')
 
 
+@collectable(bytes)
 def from_bits(bits):
     """Yield brainfuck instructions from MWOT bits."""
     chunk_size = 3
@@ -32,6 +33,7 @@ def from_bits(bits):
         yield cmdmap[chunk]
 
 
+@collectable()
 def to_bits(chars):
     """Convert a string of brainfuck to a chain of MWOT bits."""
     for cmd in chars:
