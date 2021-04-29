@@ -41,7 +41,10 @@ def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
             goes out of bounds. Also determines whether "dynamic size"
             includes negative indices.
     """
-    memory = [0] * totalcells if totalcells else defaultdict(lambda: 0)
+    if totalcells:
+        memory = [0] * totalcells
+    else:
+        memory = defaultdict(lambda: 0)
     pc = 0
     pointer = 0
 
@@ -57,17 +60,19 @@ def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
         if wrapover:
             if totalcells:
                 pointer %= totalcells
-        elif pointer < 0 or (totalcells and pointer >= totalcells):
+        elif pointer < 0 or (totalcells and totalcells <= pointer):
             raise InterpreterError(f'pointer out of range: {pointer}')
 
     def increment(by):
-        if cellsize and cellsize > 0:
-            memory[pointer] = (memory[pointer] + by) % (1 << cellsize)
-        else:
-            memory[pointer] += by
+        memory[pointer] += by
+        if cellsize:
+            cell_capacity = 1 << cellsize
+            memory[pointer] %= cell_capacity
 
     def write():
-        outfile.write(bytes((memory[pointer] % 256,)))
+        byte = memory[pointer] % 256
+        bytestr = bytes((byte,))
+        outfile.write(bytestr)
         outfile.flush()
 
     def read():
@@ -115,7 +120,7 @@ def get_jumps(brainfuck):
                 target = stack.pop()
             except IndexError:
                 raise InterpreterError("unmatched ']'") from None
-            jumps[target], jumps[pc] = pc, target
+            jumps[pc], jumps[target] = target, pc
     if stack:
         raise InterpreterError("unmatched '['")
     return jumps
