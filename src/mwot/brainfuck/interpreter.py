@@ -3,10 +3,10 @@
 from collections import defaultdict
 import sys
 
-from ..compiler import mwot_to_bits
+from ..compiler import bits_from_mwot
 from ..exceptions import InterpreterError
 from ..util import decode, deshebang
-from . import cmds, from_bits as bits_to_bf
+from . import cmds, from_bits as bf_from_bits
 
 cmds_str = cmds.decode('ascii')
 
@@ -20,7 +20,7 @@ def clean_bf(chars):
 
 def run_mwot(mwot, **options):
     """Compile MWOT to brainfuck and execute it."""
-    run(bits_to_bf(mwot_to_bits(mwot)), shebang_in=False, **options)
+    run(bf_from_bits(bits_from_mwot(mwot)), shebang_in=False, **options)
 
 
 def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,

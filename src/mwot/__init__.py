@@ -1,24 +1,38 @@
+"""MWOT: an esolang."""
+
+__all__ = [
+    'CompilerError',
+    'InterpreterError',
+    'MWOTError',
+    'bf_from_bits',
+    'bf_from_mwot',
+    'binary',
+    'binary_from_mwot',
+    'bits_from_bf',
+    'bits_from_binary',
+    'bits_from_mwot',
+    'brainfuck',
+    'cli',
+]
 __version__ = '0.0.0.dev0'
 
 from . import binary
 from . import brainfuck
 from . import cli
-from .compiler import mwot_to_bits
+from .compiler import bits_from_mwot
 from .exceptions import CompilerError, InterpreterError, MWOTError
 
+bf_from_bits = brainfuck.from_bits
+bits_from_bf = brainfuck.to_bits
+binary_from_bits = binary.from_bits
+bits_from_binary = binary.to_bits
 
-def mwot_to_bf(mwot):
+
+def bf_from_mwot(mwot):
     """Convert MWOT source to brainfuck."""
-    return bytes(mwot_to_bf_chars(mwot))
+    return brainfuck.from_bits(bits_from_mwot(mwot))
 
-def mwot_to_bf_chars(mwot):
-    """Convert MWOT source to brainfuck instructions."""
-    return brainfuck.from_bits(mwot_to_bits(mwot))
 
-def mwot_to_binary(mwot):
+def binary_from_mwot(mwot):
     """Convert MWOT source to binary."""
-    return bytes(mwot_to_binary_chars(mwot))
-
-def mwot_to_binary_chars(mwot):
-    """Convert MWOT source to binary bytes."""
-    return bytes.from_bits(mwot_to_bits(mwot))
+    return bytes.from_bits(bits_from_mwot(mwot))
