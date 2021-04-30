@@ -13,7 +13,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     keywords=['esolang', 'esoteric language', 'brainfuck'],
+    license='Unlicense',
     classifiers=[
+        'License :: OSI Approved :: The Unlicense (Unlicense)',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
