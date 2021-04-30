@@ -14,7 +14,7 @@ __all__ = [
     'brainfuck',
     'cli',
     'run_bf',
-    'run_mwot_bf',
+    'run_bf_mwot',
 ]
 __version__ = '0.0.0.dev0'
 
@@ -30,7 +30,7 @@ binary_from_bits = binary.from_bits
 bits_from_binary = binary.to_bits
 
 run_bf = brainfuck.interpreter.run
-run_mwot_bf = brainfuck.interpreter.run_mwot
+run_bf_mwot = brainfuck.interpreter.run_mwot
 
 
 def bf_from_mwot(mwot):
