@@ -6,6 +6,8 @@ import textwrap
 ascii_range = range(128)
 byte_range = range(256)
 
+default_width = 72
+
 
 def chop(it, size):
     """Chop an iterable into chunks of length ``size``.
@@ -114,7 +116,7 @@ def split(chars):
         yield word
 
 
-def wrap_source(text, width=80):
+def wrap_source(text, width=default_width):
     """Wrapping algorithm suitable for MWOT source."""
     lines = textwrap.wrap(text, width=width, break_long_words=False,
                           break_on_hyphens=False)
