@@ -2,28 +2,20 @@
 
 from ..util import chop
 
-dummies = ('zz', 'Z')
-no_bit = '.'
 
-
-def decomp(bits, width=8):
+def decomp(bits, width=8, dummies=('zz', 'q'), no_bit='.'):
     """Decompile to a guide for writing MWOT source.
 
     The guide will itself be valid MWOT.
 
-    Example output for bits 01011010 and width 4:
+    Example output for bits 110011111 and width 6:
 
-        0101  zz Z zz Z
-        1010  Z zz Z zz
-
-    Example output for bits 101 and width 6:
-
-        101...  Z zz Z
+        110011  q q zz zz q q
+        111...  q q q
     """
-    lines = []
-    for row in chop(bits, width):
-        line_bits = ''.join(map(str, row)).ljust(width, no_bit)
-        line_dummies = ' '.join(dummies[i] for i in row)
-        line = f'{line_bits}  {line_dummies}\n'
-        lines.append(line)
-    return ''.join(lines)
+    def lines():
+        for row in chop(bits, width):
+            line_bits = ''.join(map(str, row)).ljust(width, no_bit)
+            line_dummies = ' '.join(dummies[i] for i in row)
+            yield f'{line_bits}  {line_dummies}\n'
+    return ''.join(lines())
