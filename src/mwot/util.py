@@ -75,11 +75,12 @@ def ensure_str(chars):
 class Joinable:
     """Wrapper for an iterator that can be joined easily."""
 
-    def __init__(self, seq_type, iterator):
+    def __init__(self, iterator, seq_type, function=None):
         collector_map = {str: ''.join}
+        self._iterator = iterator
         self._seq_type = seq_type
         self._collect = collector_map.get(seq_type, seq_type)
-        self._iterator = iterator
+        self._function = function
 
     def __iter__(self):
         return self
@@ -88,9 +89,12 @@ class Joinable:
         return self._iterator.__next__()
 
     def __repr__(self):
-        classname = type(self).__qualname__
-        typename = self._seq_type.__qualname__
-        return f'{classname}({typename}, ...)'
+        seqtype = self._seq_type.__qualname__
+        if self._function is None:
+            return f'<joinable {seqtype}>'
+        module = self._function.__module__
+        func = self._function.__qualname__
+        return f'<joinable {seqtype} {module}.{func}>'
 
     def join(self):
         """Return self, joined with the correct collector."""
@@ -106,8 +110,8 @@ def joinable(seq_type=list):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            stream = f(*args, **kwargs)
-            return Joinable(seq_type, stream)
+            iterator = f(*args, **kwargs)
+            return Joinable(iterator, seq_type, function=f)
         return wrapper
     return decorator
 
