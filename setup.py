@@ -5,7 +5,7 @@ long_description = Path('README.md').read_text()
 
 setuptools.setup(
     name='mwot',
-    version='0.0.0',
+    version='0.0.1',
     author='Gramkraxor',
     author_email='gram@krax.dev',
     url='https://github.com/gramkraxor/mwot',

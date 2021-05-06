@@ -20,7 +20,7 @@ __all__ = [
     'run_bf',
     'run_bf_mwot',
 ]
-__version__ = '0.0.0'
+__version__ = '0.0.1'
 
 from . import binary
 from . import brainfuck
