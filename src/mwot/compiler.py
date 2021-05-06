@@ -1,8 +1,9 @@
 """Turn MWOT into bits."""
 
-from .util import deshebang, split
+from .util import deshebang, joinable, split
 
 
+@joinable()
 def bits_from_mwot(mwot):
     """Yield MWOT bits from MWOT source.
 
@@ -16,5 +17,5 @@ def bits_from_mwot(mwot):
 
 
 def letter_count(word):
-    """How many charaters in ``word`` satisfy ``str.isalpha()``?"""
+    """How many charaters in `word` satisfy `str.isalpha()`?"""
     return sum(map(str.isalpha, word))

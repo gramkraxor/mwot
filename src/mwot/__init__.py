@@ -28,6 +28,7 @@ from . import cli
 from . import decompilers
 from .compiler import bits_from_mwot
 from .exceptions import CompilerError, InterpreterError, MWOTError
+from .util import joinable
 
 bf_from_bits = brainfuck.from_bits
 bits_from_bf = brainfuck.to_bits
@@ -42,11 +43,13 @@ decomp_guide = decompilers.guide.decomp
 decomp_rand = decompilers.rand.decomp
 
 
+@joinable(bytes)
 def bf_from_mwot(mwot):
     """Convert MWOT source to brainfuck."""
-    return brainfuck.from_bits(bits_from_mwot(mwot))
+    return bf_from_bits(bits_from_mwot(mwot))
 
 
+@joinable(bytes)
 def binary_from_mwot(mwot):
     """Convert MWOT source to binary."""
-    return binary.from_bits(bits_from_mwot(mwot))
+    return binary_from_bits(bits_from_mwot(mwot))

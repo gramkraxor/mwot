@@ -1,6 +1,6 @@
 """Output a guide to help write your own MWOT from your desired bits."""
 
-from ..util import chop
+from ..util import chunks
 from .share import default_dummies
 
 
@@ -15,7 +15,7 @@ def decomp(bits, cols=8, dummies=default_dummies, no_bit='-'):
         111---  x x x
     """
     def lines():
-        for row in chop(bits, cols):
+        for row in chunks(bits, cols):
             line_bits = ''.join(map(str, row)).ljust(cols, no_bit)
             line_dummies = ' '.join(dummies[i] for i in row)
             yield f'{line_bits}  {line_dummies}\n'

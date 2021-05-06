@@ -5,12 +5,13 @@ import sys
 
 from ..compiler import bits_from_mwot
 from ..exceptions import InterpreterError
-from ..util import decode, deshebang
+from ..util import decode, deshebang, joinable
 from . import cmds, from_bits as bf_from_bits
 
 cmds_str = cmds.decode('ascii')
 
 
+@joinable(str)
 def clean_bf(chars):
     """Remove non-brainfuck characters from a string."""
     for char in chars:
@@ -28,7 +29,7 @@ def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
         wrapover=True):
     """Run brainfuck code.
 
-    I/O is done in ``bytes``, not ``str``.
+    I/O is done in `bytes`, not `str`.
 
     Implementation options:
         cellsize: Size of each cell, in bits. Can be falsy for no limit.
@@ -51,7 +52,7 @@ def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
     brainfuck = decode(brainfuck)
     if shebang_in:
         brainfuck = deshebang(brainfuck)
-    brainfuck = ''.join(clean_bf(brainfuck))
+    brainfuck = clean_bf(brainfuck).join()
     jumps = get_jumps(brainfuck)
 
     def shift(by):
