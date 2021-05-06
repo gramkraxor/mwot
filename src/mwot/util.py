@@ -8,7 +8,7 @@ byte_range = range(256)
 
 
 def chunks(it, size):
-    """Chop an iterable into chunks of length ``size``.
+    """Chop an iterable into chunks of length `size`.
 
     Also yields the remainder chunk.
     """

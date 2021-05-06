@@ -29,7 +29,7 @@ def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
         wrapover=True):
     """Run brainfuck code.
 
-    I/O is done in ``bytes``, not ``str``.
+    I/O is done in `bytes`, not `str`.
 
     Implementation options:
         cellsize: Size of each cell, in bits. Can be falsy for no limit.

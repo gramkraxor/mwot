@@ -17,5 +17,5 @@ def bits_from_mwot(mwot):
 
 
 def letter_count(word):
-    """How many charaters in ``word`` satisfy ``str.isalpha()``?"""
+    """How many charaters in `word` satisfy `str.isalpha()`?"""
     return sum(map(str.isalpha, word))
