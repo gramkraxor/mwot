@@ -17,25 +17,6 @@ def chop(it, size):
         yield chunk
 
 
-def collectable(seq_type=list):
-    """Decorator for iterable functions to add a collect option.
-
-    Defining a function with `@collectable(str)` makes
-    `fn(..., collect=True)` equivalent to `''.join(fn(...))`.
-    """
-    collector_map = {str: ''.join}
-    collector = collector_map.get(seq_type, seq_type)
-    def decorator(f):
-        @wraps(f)
-        def wrapper(*args, collect=False, **kwargs):
-            returned = f(*args, **kwargs)
-            if collect:
-                return collector(returned)
-            return returned
-        return wrapper
-    return decorator
-
-
 def decode(chars, ensure=True):
     """Convert an iterable of ints or strs into a str iterable."""
     if isinstance(chars, str):
@@ -89,6 +70,46 @@ def ensure_str(chars):
             raise TypeError('iterable does not exclusively yield str '
                             'characters')
         yield char
+
+
+class Joinable:
+    """Wrapper for an iterator that can be joined easily."""
+
+    def __init__(self, seq_type, iterator):
+        collector_map = {str: ''.join}
+        self._seq_type = seq_type
+        self._collect = collector_map.get(seq_type, seq_type)
+        self._iterator = iterator
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self._iterator.__next__()
+
+    def __repr__(self):
+        classname = type(self).__qualname__
+        typename = self._seq_type.__qualname__
+        return f'{classname}({typename}, ...)'
+
+    def join(self):
+        """Return self, joined with the correct collector."""
+        return self._collect(self._iterator)
+
+
+def joinable(seq_type=list):
+    """Decorator for iterable functions to add a collect option.
+
+    `Joinable`'s `join()` interface unifies the joining functions for
+    various types: `''.join()`, `bytes()`, `list()`.
+    """
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            stream = f(*args, **kwargs)
+            return Joinable(seq_type, stream)
+        return wrapper
+    return decorator
 
 
 def probe_strtype(chars):

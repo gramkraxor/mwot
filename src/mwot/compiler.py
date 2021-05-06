@@ -1,9 +1,9 @@
 """Turn MWOT into bits."""
 
-from .util import collectable, deshebang, split
+from .util import deshebang, joinable, split
 
 
-@collectable()
+@joinable()
 def bits_from_mwot(mwot):
     """Yield MWOT bits from MWOT source.
 

@@ -2,12 +2,12 @@
 
 import itertools
 from ..exceptions import CompilerError
-from ..util import chop, collectable
+from ..util import chop, joinable
 
 bitrange = range(8)[::-1]
 
 
-@collectable(bytes)
+@joinable(bytes)
 def from_bits(bits):
     """Yield bytes from MWOT bits."""
     chunk_size = 8
@@ -17,7 +17,7 @@ def from_bits(bits):
         yield sum(b << i for i, b in zip(bitrange, chunk))
 
 
-@collectable()
+@joinable()
 def to_bits(chars):
     """Convert a string of brainfuck to a chain of MWOT bits."""
     for byte in chars:
