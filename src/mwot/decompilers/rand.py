@@ -3,7 +3,7 @@
 import random
 from string import ascii_lowercase
 
-from ..util import default_width, wrap_source
+from .share import default_width, wrap_source
 
 
 def decomp(bits, width=default_width):

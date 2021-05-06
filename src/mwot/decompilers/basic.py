@@ -1,7 +1,6 @@
 """Decompile to the simplest possible MWOT."""
 
-from ..util import default_width, wrap_source
-from .share import default_dummies
+from .share import default_dummies, default_width, wrap_source
 
 
 def decomp(bits, dummies=default_dummies, width=default_width):
