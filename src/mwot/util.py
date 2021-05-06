@@ -1,6 +1,7 @@
 """General functions, etc."""
 
 import itertools
+import textwrap
 
 ascii_range = range(128)
 byte_range = range(256)
@@ -111,3 +112,10 @@ def split(chars):
 
     while word := ''.join(nextword()):
         yield word
+
+
+def wrap_source(text, width=80):
+    """Wrapping algorithm suitable for MWOT source."""
+    lines = textwrap.wrap(text, width=width, break_long_words=False,
+                          break_on_hyphens=False)
+    return '\n'.join((*lines, ''))
