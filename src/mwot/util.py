@@ -75,33 +75,41 @@ def ensure_str(chars):
 class Joinable:
     """Wrapper for an iterator that can be joined easily."""
 
-    def __init__(self, iterator, seq_type, function=None):
-        collector_map = {str: ''.join}
-        self._iterator = iterator
-        self._seq_type = seq_type
-        self._collect = collector_map.get(seq_type, seq_type)
-        self._function = function
+    # Collector functions that aren't their type constructors
+    collectors = {
+        None: list,
+        str: ''.join,
+    }
+
+    def __init__(self, iterator, seq_type=None, function=None):
+        self.iterator = iterator
+        self.seq_type = seq_type
+        self.collect = self.collectors.get(seq_type, seq_type)
+        self.function = function
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return self._iterator.__next__()
+        return self.iterator.__next__()
 
     def __repr__(self):
-        seqtype = self._seq_type.__qualname__
-        if self._function is None:
-            return f'<joinable {seqtype}>'
-        module = self._function.__module__
-        func = self._function.__qualname__
-        return f'<joinable {seqtype} {module}.{func}>'
+        infos = ['joinable']
+        if self.seq_type is not None:
+            infos.append(self.seq_type.__qualname__)
+        if self.function is not None:
+            module = self.function.__module__
+            func = self.function.__qualname__
+            infos.append(f'{module}.{func}')
+        info = ' '.join(infos)
+        return f'<{info}>'
 
     def join(self):
         """Return self, joined with the correct collector."""
-        return self._collect(self._iterator)
+        return self.collect(self.iterator)
 
 
-def joinable(seq_type=list):
+def joinable(seq_type=None):
     """Decorator for iterable functions to add a collect option.
 
     `Joinable`'s `join()` interface unifies the joining functions for
