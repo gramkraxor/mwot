@@ -13,6 +13,8 @@ __all__ = [
     'bits_from_mwot',
     'brainfuck',
     'cli',
+    'decomp_guide',
+    'decompilers',
     'run_bf',
     'run_bf_mwot',
 ]
@@ -21,6 +23,7 @@ __version__ = '0.0.0'
 from . import binary
 from . import brainfuck
 from . import cli
+from . import decompilers
 from .compiler import bits_from_mwot
 from .exceptions import CompilerError, InterpreterError, MWOTError
 
@@ -31,6 +34,8 @@ bits_from_binary = binary.to_bits
 
 run_bf = brainfuck.interpreter.run
 run_bf_mwot = brainfuck.interpreter.run_mwot
+
+decomp_guide = decompilers.guide.decomp
 
 
 def bf_from_mwot(mwot):
