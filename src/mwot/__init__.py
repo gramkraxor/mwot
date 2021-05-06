@@ -13,7 +13,9 @@ __all__ = [
     'bits_from_mwot',
     'brainfuck',
     'cli',
+    'decomp_basic',
     'decomp_guide',
+    'decomp_rand',
     'decompilers',
     'run_bf',
     'run_bf_mwot',
@@ -35,7 +37,9 @@ bits_from_binary = binary.to_bits
 run_bf = brainfuck.interpreter.run
 run_bf_mwot = brainfuck.interpreter.run_mwot
 
+decomp_basic = decompilers.basic.decomp
 decomp_guide = decompilers.guide.decomp
+decomp_rand = decompilers.rand.decomp
 
 
 def bf_from_mwot(mwot):
