@@ -2,7 +2,7 @@
 
 import itertools
 from ..exceptions import CompilerError
-from ..util import chop, joinable
+from ..util import chunks, joinable
 
 bitrange = range(8)[::-1]
 
@@ -11,7 +11,7 @@ bitrange = range(8)[::-1]
 def from_bits(bits):
     """Yield bytes from MWOT bits."""
     chunk_size = 8
-    for chunk in chop(bits, chunk_size):
+    for chunk in chunks(bits, chunk_size):
         if len(chunk) != chunk_size:
             raise CompilerError(f'word count not divisible by {chunk_size}')
         yield sum(b << i for i, b in zip(bitrange, chunk))

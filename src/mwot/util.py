@@ -7,7 +7,7 @@ ascii_range = range(128)
 byte_range = range(256)
 
 
-def chop(it, size):
+def chunks(it, size):
     """Chop an iterable into chunks of length ``size``.
 
     Also yields the remainder chunk.

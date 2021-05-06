@@ -13,7 +13,7 @@ Instructions are mapped to bits in the following order:
 
 import itertools
 from ..exceptions import CompilerError
-from ..util import chop, joinable
+from ..util import chunks, joinable
 
 cmds = b'><+-.,[]'
 allchunks = tuple(itertools.product((0, 1), repeat=3))  # 000 001 ...
@@ -27,7 +27,7 @@ hello_world = (b'++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.++++'
 def from_bits(bits):
     """Yield brainfuck instructions from MWOT bits."""
     chunk_size = 3
-    for chunk in chop(bits, chunk_size):
+    for chunk in chunks(bits, chunk_size):
         if len(chunk) != chunk_size:
             raise CompilerError(f'word count not divisible by {chunk_size}')
         yield cmdmap[chunk]
