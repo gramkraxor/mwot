@@ -2,6 +2,7 @@
 
 import argparse
 from .. import __version__
+from ..decompilers.share import default_dummies, default_width
 
 description = """
 
@@ -17,9 +18,55 @@ Coming soon!
 
 """
 
+truthies = ('true', 't', 'yes', 'y', '1')
+falsies = ('false', 'f', 'no', 'n', '0')
+
+decompilers = ('basic', 'guide', 'rand')
+
+
+def boolean_arg(val):
+    """Boolean argument type."""
+    val = val.casefold()
+    if val in truthies:
+        return True
+    if val in falsies:
+        return False
+    raise ValueError('unknown boolean keyword')
+
+
+def decompiler_arg(val):
+    """Decompiler argument type."""
+    val = val.casefold()
+    if val in decompilers:
+        return val
+    raise ValueError('unknown decompiler')
+
+def int_or_none_arg(val):
+    """Integer-or-'none' argument type."""
+    if val.casefold() == 'none':
+        return None
+    return int(val)
+
+
+def nonneg_int_arg(val):
+    """Nonnegative integer argument type."""
+    num = int(val)
+    if num < 0:
+        raise ValueError('negative int')
+    return num
+
+
+def positive_int_arg(val):
+    """Positive integer argument type."""
+    num = int(val)
+    if num <= 0:
+        raise ValueError('nonpositive int')
+    return num
+
 
 def parse(args):
     parser = argparse.ArgumentParser(
+        prog='mwot',
         usage=argparse.SUPPRESS,
         description=description,
         epilog=epilog,
@@ -27,18 +74,182 @@ def parse(args):
         add_help=False,
     )
 
-    main_options = parser.add_argument_group('Main options')
+    main_opts = parser.add_argument_group(
+        'Main options')
+    trans_opts = parser.add_argument_group(
+        'Transpilation (-[cd]) options')
+    decomp_opts = parser.add_argument_group(
+        'Decompilation (-d) options')
+    bf_src_opts = parser.add_argument_group(
+        'Brainfuck source (-[dx]b) options')
+    i_bf_opts = parser.add_argument_group(
+        'Brainfuck interpreter (-[ix]b) options')
 
-    main_options.add_argument(
+    main_opts.add_argument(
+        '-b', '--brainfuck', '--bf',
+        action='store_const',
+        dest='format',
+        const='brainfuck',
+        help='use brainfuck format',
+    )
+    main_opts.add_argument(
+        '-B', '--bytes', '--binary',
+        action='store_const',
+        dest='format',
+        const='binary',
+        help='use bytes format',
+    )
+    main_opts.add_argument(
+        '-c', '--compile',
+        action='store_const',
+        dest='action',
+        const='compile',
+        help='compile MWOT to brainfuck or to bytes',
+    )
+    main_opts.add_argument(
+        '-d', '--decompile',
+        action='store_const',
+        dest='action',
+        const='decompile',
+        help='decompile brainfuck or bytes to MWOT',
+    )
+    main_opts.add_argument(
+        '-i', '--interpret',
+        action='store_const',
+        dest='action',
+        const='interpret',
+        help='(with -b) interpret (execute) MWOT as brainfuck',
+    )
+    main_opts.add_argument(
+        '-x', '--execute',
+        action='store_const',
+        dest='action',
+        const='execute',
+        help='(with -b) execute brainfuck',
+    )
+    main_opts.add_argument(
+        'srcfiles',
+        metavar='SRCFILE',
+        nargs='*',
+        help="source file(s) (absent or '-' for stdin)",
+    )
+    main_opts.add_argument(
+        '--src', '--source',
+        metavar='SRC',
+        help="supply source code as an argument, don't accept SRCFILE",
+    )
+    main_opts.add_argument(
+        '-o', '--output-file',
+        metavar='OUTFILE',
+        dest='outfile',
+        help="output file or pattern (absent or '-' for stdout)",
+    )
+    main_opts.add_argument(
         '--help',
         action='help',
-        help='show this help message and exit',
+        help='show this help and exit',
     )
-    main_options.add_argument(
+    main_opts.add_argument(
         '--version',
         action='version',
         version=f'mwot {__version__}',
         help='show version info and exit',
+    )
+
+    trans_opts.add_argument(
+        '-s', '--shebang-out',
+        action='store_true',
+        help='(with -b) include a shebang in output',
+    )
+    trans_opts.add_argument(
+        '-X', '--executable-out',
+        action='store_true',
+        help='(with -b or -cB) make output files executable',
+    )
+
+    decomp_opts.add_argument(
+        '-D', '--decompiler',
+        metavar='DECOMP',
+        type=decompiler_arg,
+        default='rand',
+        help="decompiler to use (default: 'rand')",
+    )
+    decomp_opts.add_argument(
+        '--width',
+        metavar='WIDTH',
+        type=positive_int_arg,
+        default=default_width,
+        help=f"(basic, rand) wrap width (default: {default_width})",
+    )
+    default_dummies_str = ' '.join(map(repr, default_dummies))
+    decomp_opts.add_argument(
+        '--dummies',
+        metavar='WORD',
+        nargs=2,
+        default=list(default_dummies),
+        help=(f'(basic, guide) even and odd words (default: '
+              f'{default_dummies_str})'),
+    )
+    decomp_opts.add_argument(
+        '--guide-cols',
+        metavar='COLS',
+        type=positive_int_arg,
+        default=8,
+        help="(guide) bits per row (default: 8)",
+    )
+
+    bf_src_opts.add_argument(
+        '--shebang-in',
+        action='store_true',
+        help='ignore any shebang in source (default)',
+    )
+    bf_src_opts.add_argument(
+        '--no-shebang-in',
+        action='store_false',
+        dest='shebang_in',
+        help='treat any shebang in source as literal brainfuck',
+    )
+    parser.set_defaults(shebang_in=True)
+
+    i_bf_opts.add_argument(
+        '--input-file',
+        metavar='INFILE',
+        help="read input from INFILE (absent or '-' for stdin if possible)",
+    )
+    i_bf_opts.add_argument(
+        '--input',
+        metavar='INPUT',
+        help='supply input as an argument',
+    )
+    i_bf_opts.add_argument(
+        '--cellsize',
+        metavar='BITS',
+        type=positive_int_arg,
+        default=8,
+        help='bits per cell (default: 8)',
+    )
+    i_bf_opts.add_argument(
+        '--eof',
+        metavar='VAL',
+        type=int_or_none_arg,
+        default=None,
+        help=('int to read in after EOF, or \'none\' for "no change" behavior '
+              '(default: none)'),
+    )
+    i_bf_opts.add_argument(
+        '--totalcells',
+        metavar='CELLS',
+        type=nonneg_int_arg,
+        default=30_000,
+        help='total cells (0 for dynamic allocation) (default: 30_000)',
+    )
+    i_bf_opts.add_argument(
+        '--wrapover',
+        metavar='BOOL',
+        type=boolean_arg,
+        default=True,
+        help=('whether the cell pointer wraps around / whether "dynamic '
+              'allocation" includes negative indices (default: true)'),
     )
 
     parsed = parser.parse_args(args)
