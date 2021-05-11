@@ -76,7 +76,7 @@ class Joinable:
     """Wrapper for an iterator that can be joined easily."""
 
     # Collector functions that aren't their type constructors
-    collectors = {
+    _collectors = {
         None: list,
         str: ''.join,
     }
@@ -84,7 +84,7 @@ class Joinable:
     def __init__(self, iterator, seq_type=None, function=None):
         self.iterator = iterator
         self.seq_type = seq_type
-        self.collect = self.collectors.get(seq_type, seq_type)
+        self.collect = self._collectors.get(seq_type, seq_type)
         self.function = function
 
     def __iter__(self):
