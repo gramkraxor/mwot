@@ -158,7 +158,7 @@ def parse(args):
     )
 
     trans_opts.add_argument(
-        '-s', '--shebang-out',
+        '-S', '--shebang-out',
         action='store_true',
         help='(with -b) include a shebang in output',
     )
