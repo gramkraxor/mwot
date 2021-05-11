@@ -87,43 +87,43 @@ def parse(args):
 
     main_opts.add_argument(
         '-b', '--brainfuck', '--bf',
-        action='store_const',
         dest='format',
+        action='store_const',
         const='brainfuck',
         help='use brainfuck format',
     )
     main_opts.add_argument(
         '-B', '--bytes', '--binary',
-        action='store_const',
         dest='format',
+        action='store_const',
         const='binary',
         help='use bytes format',
     )
     main_opts.add_argument(
         '-c', '--compile',
-        action='store_const',
         dest='action',
+        action='store_const',
         const='compile',
         help='compile MWOT to brainfuck or to bytes',
     )
     main_opts.add_argument(
         '-d', '--decompile',
-        action='store_const',
         dest='action',
+        action='store_const',
         const='decompile',
         help='decompile brainfuck or bytes to MWOT',
     )
     main_opts.add_argument(
         '-i', '--interpret',
-        action='store_const',
         dest='action',
+        action='store_const',
         const='interpret',
         help='(with -b) interpret (execute) MWOT as brainfuck',
     )
     main_opts.add_argument(
         '-x', '--execute',
-        action='store_const',
         dest='action',
+        action='store_const',
         const='execute',
         help='(with -b) execute brainfuck',
     )
@@ -135,13 +135,14 @@ def parse(args):
     )
     main_opts.add_argument(
         '--src', '--source',
+        dest='source',
         metavar='SRC',
         help="supply source code as an argument, don't accept SRCFILE",
     )
     main_opts.add_argument(
         '-o', '--output-file',
-        metavar='OUTFILE',
         dest='outfile',
+        metavar='OUTFILE',
         help="output file or pattern (absent or '-' for stdout)",
     )
     main_opts.add_argument(
@@ -205,14 +206,15 @@ def parse(args):
     )
     bf_src_opts.add_argument(
         '--no-shebang-in',
-        action='store_false',
         dest='shebang_in',
+        action='store_false',
         help='treat any shebang in source as literal brainfuck',
     )
     parser.set_defaults(shebang_in=True)
 
     i_bf_opts.add_argument(
         '--input-file',
+        dest='infile',
         metavar='INFILE',
         help="read input from INFILE (absent or '-' for stdin if possible)",
     )
