@@ -86,42 +86,44 @@ def parse(args):
     i_bf_opts = parser.add_argument_group(
         'Brainfuck interpreter (-[ix]b) options')
 
-    main_opts.add_argument(
+    action_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
+    format_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
+    action_mx_opts.add_argument(
         '-c', '--compile',
         dest='action',
         action='store_const',
         const='compile',
         help='compile MWOT to brainfuck or to bytes',
     )
-    main_opts.add_argument(
+    action_mx_opts.add_argument(
         '-d', '--decompile',
         dest='action',
         action='store_const',
         const='decompile',
         help='decompile brainfuck or bytes to MWOT',
     )
-    main_opts.add_argument(
+    action_mx_opts.add_argument(
         '-i', '--interpret',
         dest='action',
         action='store_const',
         const='interpret',
         help='(with -b) interpret (execute) MWOT as brainfuck',
     )
-    main_opts.add_argument(
+    action_mx_opts.add_argument(
         '-x', '--execute',
         dest='action',
         action='store_const',
         const='execute',
         help='(with -b) execute brainfuck',
     )
-    main_opts.add_argument(
+    format_mx_opts.add_argument(
         '-b', '--brainfuck', '--bf',
         dest='format',
         action='store_const',
         const='brainfuck',
         help='use brainfuck format',
     )
-    main_opts.add_argument(
+    format_mx_opts.add_argument(
         '-B', '--bytes', '--binary',
         dest='format',
         action='store_const',
@@ -213,13 +215,14 @@ def parse(args):
     )
     parser.set_defaults(shebang_in=True)
 
-    i_bf_opts.add_argument(
+    input_mx_opts = i_bf_opts.add_mutually_exclusive_group()
+    input_mx_opts.add_argument(
         '--input-file',
         dest='infile',
         metavar='INFILE',
         help="read input from INFILE (absent or '-' for stdin if possible)",
     )
-    i_bf_opts.add_argument(
+    input_mx_opts.add_argument(
         '--input',
         metavar='INPUT',
         help='supply input as an argument',
