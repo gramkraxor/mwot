@@ -41,6 +41,7 @@ def decompiler_arg(val):
         return val
     raise ValueError('unknown decompiler')
 
+
 def int_or_none_arg(val):
     """Integer-or-'none' argument type."""
     if val.casefold() == 'none':
@@ -86,20 +87,6 @@ def parse(args):
         'Brainfuck interpreter (-[ix]b) options')
 
     main_opts.add_argument(
-        '-b', '--brainfuck', '--bf',
-        dest='format',
-        action='store_const',
-        const='brainfuck',
-        help='use brainfuck format',
-    )
-    main_opts.add_argument(
-        '-B', '--bytes', '--binary',
-        dest='format',
-        action='store_const',
-        const='binary',
-        help='use bytes format',
-    )
-    main_opts.add_argument(
         '-c', '--compile',
         dest='action',
         action='store_const',
@@ -126,6 +113,20 @@ def parse(args):
         action='store_const',
         const='execute',
         help='(with -b) execute brainfuck',
+    )
+    main_opts.add_argument(
+        '-b', '--brainfuck', '--bf',
+        dest='format',
+        action='store_const',
+        const='brainfuck',
+        help='use brainfuck format',
+    )
+    main_opts.add_argument(
+        '-B', '--bytes', '--binary',
+        dest='format',
+        action='store_const',
+        const='binary',
+        help='use bytes format',
     )
     main_opts.add_argument(
         'srcfiles',
@@ -170,7 +171,7 @@ def parse(args):
 
     decomp_opts.add_argument(
         '-D', '--decompiler',
-        metavar='DECOMP',
+        metavar='DECOMPILER',
         type=decompiler_arg,
         default='rand',
         help="decompiler to use (default: 'rand')",
