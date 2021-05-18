@@ -4,7 +4,7 @@ from ..util import chunks
 from .share import default_dummies
 
 
-def decomp(bits, cols=8, dummies=default_dummies, no_bit='-'):
+def decomp(bits, cols=8, dummies=default_dummies, no_bit='-', **_):
     """Decompile to a guide for writing MWOT source.
 
     The guide will itself be valid MWOT.
