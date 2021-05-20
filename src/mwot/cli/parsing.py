@@ -23,6 +23,8 @@ falsies = ('false', 'f', 'no', 'n', '0')
 
 decompilers = ('basic', 'guide', 'rand')
 
+unspecified = object()  # Indicates that kwargs should not be passed
+
 
 def boolean_arg(val):
     """Boolean argument type."""
@@ -182,7 +184,7 @@ def parse(args):
         '--width',
         metavar='WIDTH',
         type=positive_int_arg,
-        default=default_width,
+        default=unspecified,
         help=f"(basic, rand) wrap width (default: {default_width})",
     )
     default_dummies_str = ' '.join(map(repr, default_dummies))
@@ -190,7 +192,7 @@ def parse(args):
         '--dummies',
         metavar='WORD',
         nargs=2,
-        default=list(default_dummies),
+        default=unspecified,
         help=(f'(basic, guide) even and odd words (default: '
               f'{default_dummies_str})'),
     )
@@ -198,7 +200,7 @@ def parse(args):
         '--guide-cols',
         metavar='COLS',
         type=positive_int_arg,
-        default=8,
+        default=unspecified,
         help="(guide) bits per row (default: 8)",
     )
 
@@ -231,14 +233,14 @@ def parse(args):
         '--cellsize',
         metavar='BITS',
         type=positive_int_arg,
-        default=8,
+        default=unspecified,
         help='bits per cell (default: 8)',
     )
     i_bf_opts.add_argument(
         '--eof',
         metavar='VAL',
         type=int_or_none_arg,
-        default=None,
+        default=unspecified,
         help=('int to read in after EOF, or \'none\' for "no change" behavior '
               '(default: none)'),
     )
@@ -246,14 +248,14 @@ def parse(args):
         '--totalcells',
         metavar='CELLS',
         type=nonneg_int_arg,
-        default=30_000,
+        default=unspecified,
         help='total cells (0 for dynamic allocation) (default: 30_000)',
     )
     i_bf_opts.add_argument(
         '--wrapover',
         metavar='BOOL',
         type=boolean_arg,
-        default=True,
+        default=unspecified,
         help=('whether the cell pointer wraps around / whether "dynamic '
               'allocation" includes negative indices (default: true)'),
     )
