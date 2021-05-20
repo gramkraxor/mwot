@@ -267,8 +267,10 @@ def parse(args):
         srcfile = srcfiles_opt.metavar
         source = '/'.join(source_opt.option_strings)
         parser.error(f'argument {source}: not allowed with argument {srcfile}')
-    if parsed.format != 'brainfuck':
-        if parsed.action in ('interpret', 'execute'):
+    if parsed.action in ('interpret', 'execute'):
+        if parsed.format != 'brainfuck':
             parser.error(f'cannot execute {parsed.format}')
+        if len(parsed.srcfiles) > 1:
+            parser.error('cannot execute multiple source files')
 
     return parser, parsed
