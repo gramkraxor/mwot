@@ -197,7 +197,7 @@ def parse(args):
               f'{default_dummies_str})'),
     )
     decomp_opts.add_argument(
-        '--guide-cols',
+        '--cols',
         metavar='COLS',
         type=positive_int_arg,
         default=unspecified,
