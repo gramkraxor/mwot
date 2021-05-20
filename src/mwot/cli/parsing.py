@@ -273,5 +273,10 @@ def parse(args):
             parser.error(f'cannot execute {parsed.format}')
         if len(parsed.srcfiles) > 1:
             parser.error('cannot execute multiple source files')
+    else:
+        if parsed.outfile == '-' and len(parsed.srcfiles) > 1:
+            parser.error('cannot transpile multiple source files to stdout')
+    if parsed.srcfiles.count('-') > 1:
+        parser.error('cannot open stdin multiple times')
 
     return parser, parsed
