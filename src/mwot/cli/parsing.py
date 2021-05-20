@@ -132,13 +132,13 @@ def parse(args):
         const='binary',
         help='use bytes format',
     )
-    main_opts.add_argument(
+    srcfiles_opt = main_opts.add_argument(
         'srcfiles',
         metavar='SRCFILE',
         nargs='*',
         help="source file(s) (absent or '-' for stdin)",
     )
-    main_opts.add_argument(
+    source_opt = main_opts.add_argument(
         '--src', '--source',
         dest='source',
         metavar='SRC',
@@ -261,5 +261,14 @@ def parse(args):
     )
 
     parsed = parser.parse_args(args)
+
+    # Manually add some restrictions.
+    if parsed.source is not None and parsed.srcfiles:
+        srcfile = srcfiles_opt.metavar
+        source = '/'.join(source_opt.option_strings)
+        parser.error(f'argument {source}: not allowed with argument {srcfile}')
+    if parsed.format != 'brainfuck':
+        if parsed.action in ('interpret', 'execute'):
+            parser.error(f'cannot execute {parsed.format}')
 
     return parser, parsed
