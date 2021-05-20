@@ -148,6 +148,7 @@ def parse(args):
         '-o', '--output-file',
         dest='outfile',
         metavar='OUTFILE',
+        default='-',
         help="output file or pattern (absent or '-' for stdout)",
     )
     main_opts.add_argument(
