@@ -17,6 +17,7 @@ __all__ = [
     'decomp_guide',
     'decomp_rand',
     'decompilers',
+    'deshebang',
     'run_bf',
     'run_bf_mwot',
 ]
@@ -28,7 +29,7 @@ from . import cli
 from . import decompilers
 from .compiler import bits_from_mwot
 from .exceptions import CompilerError, InterpreterError, MWOTError
-from .util import joinable
+from .util import deshebang, joinable
 
 bf_from_bits = brainfuck.from_bits
 bits_from_bf = brainfuck.to_bits
