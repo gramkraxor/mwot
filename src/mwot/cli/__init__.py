@@ -60,7 +60,7 @@ def execute_action(parsed, format_module):
 def main(args=None, prefix_args=()):
     if args is None:
         args = sys.argv[1:]
-    args = [*args, *prefix_args]
+    args = [*prefix_args, *args]
 
     _, parsed = parse(args)
 
