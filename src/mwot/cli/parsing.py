@@ -4,6 +4,8 @@ import argparse
 
 from .. import __version__
 from ..decompilers.share import default_dummies, default_width
+from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
+                       NonnegIntArg, PosIntArg)
 
 description = """
 
@@ -19,63 +21,7 @@ Coming soon!
 
 """
 
-truthies = ('true', 't', 'yes', 'y', '1')
-falsies = ('false', 'f', 'no', 'n', '0')
-
-decompilers = ('basic', 'guide', 'rand')
-
 unspecified = object()  # Indicates that kwargs should not be passed
-
-
-def boolean_arg(val):
-    """Boolean argument type."""
-    val = val.casefold()
-    if val in truthies:
-        return True
-    if val in falsies:
-        return False
-    raise ValueError('unknown boolean keyword')
-
-
-def decompiler_arg(val):
-    """Decompiler argument type."""
-    val = val.casefold()
-    if val in decompilers:
-        return val
-    raise ValueError('unknown decompiler')
-
-
-def int_or_none_arg(val):
-    """Integer-or-'none' argument type."""
-    if val.casefold() == 'none':
-        return None
-    return int(val)
-
-
-def nonneg_int_arg(val):
-    """Nonnegative integer argument type."""
-    num = int(val)
-    if num < 0:
-        raise ValueError('negative int')
-    return num
-
-
-def positive_int_arg(val):
-    """Positive integer argument type."""
-    num = int(val)
-    if num <= 0:
-        raise ValueError('nonpositive int')
-    return num
-
-
-def positive_int_or_none_arg(val):
-    """Positive integer or 'none' argument type."""
-    if val.casefold() == 'none':
-        return None
-    num = int(val)
-    if num <= 0:
-        raise ValueError('nonpositive int')
-    return num
 
 
 def parse(args):
@@ -188,14 +134,14 @@ def parse(args):
     decomp_opts.add_argument(
         '-D', '--decompiler',
         metavar='DECOMPILER',
-        type=decompiler_arg,
+        type=DecompilerArg,
         default='rand',
         help="decompiler to use (default: 'rand')",
     )
     decomp_opts.add_argument(
         '--width',
         metavar='WIDTH',
-        type=positive_int_or_none_arg,
+        type=ArgUnion(PosIntArg, NoneArg),
         default=unspecified,
         help=f"(basic, rand) wrap width (default: {default_width})",
     )
@@ -211,7 +157,7 @@ def parse(args):
     decomp_opts.add_argument(
         '--cols',
         metavar='COLS',
-        type=positive_int_arg,
+        type=PosIntArg,
         default=unspecified,
         help="(guide) bits per row (default: 8)",
     )
@@ -245,14 +191,14 @@ def parse(args):
     i_bf_opts.add_argument(
         '--cellsize',
         metavar='BITS',
-        type=positive_int_or_none_arg,
+        type=ArgUnion(PosIntArg, NoneArg),
         default=unspecified,
         help='bits per cell (default: 8)',
     )
     i_bf_opts.add_argument(
         '--eof',
         metavar='VAL',
-        type=int_or_none_arg,
+        type=ArgUnion(IntArg, NoneArg),
         default=unspecified,
         help=('int to read in after EOF, or \'none\' for "no change" behavior '
               '(default: none)'),
@@ -260,14 +206,14 @@ def parse(args):
     i_bf_opts.add_argument(
         '--totalcells',
         metavar='CELLS',
-        type=nonneg_int_arg,
+        type=NonnegIntArg,
         default=unspecified,
         help='total cells (0 for dynamic allocation) (default: 30_000)',
     )
     i_bf_opts.add_argument(
         '--wrapover',
         metavar='BOOL',
-        type=boolean_arg,
+        type=BooleanArg,
         default=unspecified,
         help=('whether the cell pointer wraps around / whether "dynamic '
               'allocation" includes negative indices (default: true)'),
