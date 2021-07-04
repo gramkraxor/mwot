@@ -23,26 +23,26 @@ def decode(chars, ensure=True):
         return chars
     if isinstance(chars, bytes):
         return chars.decode('ascii', errors='ignore')
-    strtype, chars = probe_strtype(chars)
-    if strtype is str:
+    stype, chars = probe_stype(chars)
+    if stype is str:
         return ensure_str(chars) if ensure else chars
     if ensure:
         chars = ensure_bytes(chars)
     return (chr(c) for c in chars if c in ascii_range)
 
 
-def deshebang(chars, strtype=str):
+def deshebang(chars, stype=str):
     """Remove a leading shebang line."""
-    if strtype is str:
+    if stype is str:
         shebang = '#!'
         newline = '\n'
         join = ''.join
-    elif strtype is bytes:
+    elif stype is bytes:
         shebang = b'#!'
         newline = ord('\n')
         join = bytes
     else:
-        raise TypeError('strtype must be str or bytes')
+        raise TypeError('stype must be str or bytes')
     chars = iter(chars)
     leading = join(itertools.islice(chars, len(shebang)))
     if leading == shebang:
@@ -124,13 +124,13 @@ def joinable(seq_type=None):
     return decorator
 
 
-def probe_strtype(chars):
+def probe_stype(chars):
     """Probe a string iterable for its type.
 
     Checks whether the first item is an int or a str, corresponding to
     bytes and str, respectively.
 
-    Returns (strtype, chars). The returned chars should replace the old
+    Returns (stype, chars). The returned chars should replace the old
     chars, since the old chars will be partially exhausted.
     """
     chars = iter(chars)
@@ -140,12 +140,12 @@ def probe_strtype(chars):
         # Consider an empty iterable a str.
         return str, iter(())
     if isinstance(first, str):
-        strtype = str
+        stype = str
     elif isinstance(first, int):
-        strtype = bytes
+        stype = bytes
     else:
         raise TypeError('iterable yields neither bytes nor str characters')
-    return strtype, itertools.chain((first,), chars)
+    return stype, itertools.chain((first,), chars)
 
 
 def split(chars):

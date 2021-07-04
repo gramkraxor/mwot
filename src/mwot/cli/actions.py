@@ -18,8 +18,8 @@ re_double_braces = re.compile(r'\{\{|\}\}')
 re_complex_specifier = re.compile(r'\{\w*[^\w{}]+\w*\}')
 
 
-def buffer(textio, strtype):
-    if strtype is bytes:
+def buffer(textio, stype):
+    if stype is bytes:
         return textio.buffer
     return textio
 
@@ -48,8 +48,8 @@ def format_outfile(pattern, pathstr):
         raise OutfileFormatError(f'bad outfile pattern: {pattern!r}') from err
 
 
-def open_mode(str_mode, strtype):
-    if strtype is bytes:
+def open_mode(str_mode, stype):
+    if stype is bytes:
         return f'{str_mode}b'
     return f'{str_mode}t'
 
@@ -79,15 +79,15 @@ class Action:
 class TranspilerAction(Action):
 
     def run(self):
-        for source in get_sources(self.args, self.strtype_in):
+        for source in get_sources(self.args, self.stype_in):
             output = self.transpile(source.read())
             if self.args.outfile == '-':
-                with buffer(sys.stdout, self.strtype_out) as f:
+                with buffer(sys.stdout, self.stype_out) as f:
                     self.write(f, output)
             else:
                 outfile_path = format_outfile(self.args.outfile,
                                               source.pathstr)
-                mode = open_mode('w', self.strtype_out)
+                mode = open_mode('w', self.stype_out)
                 with open(outfile_path, mode) as f:
                     self.write(f, output)
 
@@ -99,8 +99,8 @@ class TranspilerAction(Action):
 
 class Compile(TranspilerAction):
 
-    strtype_in = str
-    strtype_out = bytes
+    stype_in = str
+    stype_out = bytes
     bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
 
     def transpile(self, source_code):
@@ -114,8 +114,8 @@ class Compile(TranspilerAction):
 
 class Decompile(TranspilerAction):
 
-    strtype_in = bytes
-    strtype_out = str
+    stype_in = bytes
+    stype_out = str
     bf_shebang = '#!/usr/bin/env mwot-i-bf\n'
     keywords = ('width', 'dummies', 'cols')
 
@@ -129,13 +129,13 @@ class Decompile(TranspilerAction):
 class InterpreterAction(Action):
 
     def run(self):
-        source = get_sources(self.args, self.strtype_in)[0]
+        source = get_sources(self.args, self.stype_in)[0]
         self.execute(source.read())
 
 
 class Interpret(InterpreterAction):
 
-    strtype_in = str
+    stype_in = str
     keywords = ('cellsize', 'eof', 'totalcells', 'wrapover')
 
     def execute(self, source_code):
@@ -144,7 +144,7 @@ class Interpret(InterpreterAction):
 
 class Execute(InterpreterAction):
 
-    strtype_in = bytes
+    stype_in = bytes
     keywords = ('shebang_in', 'cellsize', 'eof', 'totalcells', 'wrapover')
 
     def execute(self, source_code):
