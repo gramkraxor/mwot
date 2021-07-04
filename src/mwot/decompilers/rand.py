@@ -6,7 +6,7 @@ from string import ascii_lowercase
 from .share import default_width, wrap_source
 
 
-def decomp(bits, width=default_width):
+def decomp(bits, width=default_width, **_):
     """Decompile to words of random length with random letters."""
     words = map(rand_word, bits)
     unwrapped = ' '.join(words)
