@@ -9,7 +9,7 @@ from .. import decompilers
 from ..util import deshebang
 from .exceptions import OutfileFormatError
 from .parsing import unspecified
-from .sources import get_sources
+from .sources import Source, StringSource
 
 x_bf_shebang = '#!/usr/bin/env mwot-i-bf\n'
 i_bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
@@ -46,6 +46,25 @@ def format_outfile(pattern, pathstr):
         )
     except (IndexError, KeyError, ValueError) as err:
         raise OutfileFormatError(f'bad outfile pattern: {pattern!r}') from err
+
+
+def get_input(parsed):
+    """Retrieve the correct interpreter input source from `parsed`."""
+    if parsed.input is not None:
+        return StringSource(parsed.input.encode())
+    if parsed.infile != '-':
+        return Source(parsed.infile, bytes)
+    if parsed.source is None and '-' in parsed.srcfiles:
+        return StringSource('')
+    return Source('-', bytes)
+
+
+def get_sources(parsed, stype):
+    """Retrieve the correct code source(s) from `parsed`."""
+    if parsed.source is not None:
+        string = parsed.source.encode() if stype is bytes else parsed.source
+        return [StringSource(string)]
+    return [Source(i, stype) for i in parsed.srcfiles]
 
 
 def open_mode(str_mode, stype):
@@ -129,8 +148,10 @@ class Decompile(TranspilerAction):
 class InterpreterAction(Action):
 
     def run(self):
-        source = get_sources(self.args, self.stype_in)[0]
-        self.execute(source.read())
+        source_code = get_sources(self.args, self.stype_in)[0].read()
+        with get_input(self.args).open() as infile:
+            self.kwargs['infile'] = infile
+            self.execute(source_code)
 
 
 class Interpret(InterpreterAction):

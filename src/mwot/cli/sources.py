@@ -39,11 +39,3 @@ class StringSource(Source):
 
     def read(self):
         return self.string
-
-
-def get_sources(parsed, stype):
-    """Retrieve the correct source(s) from `parsed`."""
-    if parsed.source is not None:
-        string = parsed.source.encode() if stype is bytes else parsed.source
-        return [StringSource(string)]
-    return [Source(i, stype) for i in parsed.srcfiles]
