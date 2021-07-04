@@ -68,6 +68,16 @@ def positive_int_arg(val):
     return num
 
 
+def positive_int_or_none_arg(val):
+    """Positive integer or 'none' argument type."""
+    if val.casefold() == 'none':
+        return None
+    num = int(val)
+    if num <= 0:
+        raise ValueError('nonpositive int')
+    return num
+
+
 def parse(args):
     parser = argparse.ArgumentParser(
         prog='mwot',
@@ -185,7 +195,7 @@ def parse(args):
     decomp_opts.add_argument(
         '--width',
         metavar='WIDTH',
-        type=positive_int_arg,
+        type=positive_int_or_none_arg,
         default=unspecified,
         help=f"(basic, rand) wrap width (default: {default_width})",
     )
@@ -235,7 +245,7 @@ def parse(args):
     i_bf_opts.add_argument(
         '--cellsize',
         metavar='BITS',
-        type=positive_int_arg,
+        type=positive_int_or_none_arg,
         default=unspecified,
         help='bits per cell (default: 8)',
     )
