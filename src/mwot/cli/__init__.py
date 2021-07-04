@@ -2,6 +2,7 @@
 
 import argparse
 import sys
+
 from .. import binary
 from .. import brainfuck
 from .actions import Compile, Decompile, Interpret, Execute

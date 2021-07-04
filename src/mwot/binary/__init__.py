@@ -1,6 +1,7 @@
 """Binary (bytes) language: conversions between bytes and MWOT bits."""
 
 import itertools
+
 from ..exceptions import CompilerError
 from ..util import chunks, joinable
 

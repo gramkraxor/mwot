@@ -12,6 +12,7 @@ Instructions are mapped to bits in the following order:
 """
 
 import itertools
+
 from ..exceptions import CompilerError
 from ..util import chunks, joinable
 
