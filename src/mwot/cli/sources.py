@@ -46,6 +46,4 @@ def get_sources(parsed, stype):
     if parsed.source is not None:
         string = parsed.source.encode() if stype is bytes else parsed.source
         return [StringSource(string)]
-    if parsed.srcfiles:
-        return [Source(i, stype) for i in parsed.srcfiles]
-    return [Source('-', stype)]
+    return [Source(i, stype) for i in parsed.srcfiles]

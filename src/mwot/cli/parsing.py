@@ -224,6 +224,7 @@ def parse(args):
         '--input-file',
         dest='infile',
         metavar='INFILE',
+        default='-',
         help="read input from INFILE (absent or '-' for stdin if possible)",
     )
     input_mx_opts.add_argument(
@@ -264,11 +265,13 @@ def parse(args):
 
     parsed = parser.parse_args(args)
 
-    # Manually add some restrictions.
+    # Manually add some restrictions and adjustments.
     if parsed.source is not None and parsed.srcfiles:
         srcfile = srcfiles_opt.metavar
         source = '/'.join(source_opt.option_strings)
         parser.error(f'argument {source}: not allowed with argument {srcfile}')
+    if not parsed.srcfiles:
+        parsed.srcfiles = ['-']
     if parsed.action in ('interpret', 'execute'):
         if parsed.format != 'brainfuck':
             parser.error(f'cannot execute {parsed.format}')
