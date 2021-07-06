@@ -3,7 +3,8 @@
 import itertools
 
 from ..exceptions import CompilerError
-from ..util import chunks, joinable
+from ..join import joinable
+from ..util import chunks
 
 bitrange = range(8)[::-1]
 

@@ -14,7 +14,8 @@ Instructions are mapped to bits in the following order:
 import itertools
 
 from ..exceptions import CompilerError
-from ..util import chunks, joinable
+from ..join import joinable
+from ..util import chunks
 
 cmds = b'><+-.,[]'
 allchunks = tuple(itertools.product((0, 1), repeat=3))  # 000 001 ...

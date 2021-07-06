@@ -5,7 +5,8 @@ import sys
 
 from ..compiler import bits_from_mwot
 from ..exceptions import InterpreterError
-from ..util import decode, deshebang, joinable
+from ..join import joinable
+from ..util import decode, deshebang
 from . import cmds, from_bits as bf_from_bits
 
 cmds_str = cmds.decode('ascii')

@@ -29,7 +29,8 @@ from . import cli
 from . import decompilers
 from .compiler import bits_from_mwot
 from .exceptions import CompilerError, InterpreterError, MWOTError
-from .util import deshebang, joinable
+from .join import joinable
+from .util import deshebang
 
 bf_from_bits = brainfuck.from_bits
 bits_from_bf = brainfuck.to_bits

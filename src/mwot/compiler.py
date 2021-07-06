@@ -1,6 +1,7 @@
 """Turn MWOT into bits."""
 
-from .util import deshebang, joinable, split
+from .join import joinable
+from .util import deshebang, split
 
 
 @joinable()
