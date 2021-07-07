@@ -16,16 +16,6 @@ import io
 import itertools
 
 
-def StringIO(s):
-    """Create a `StringIO` or `BytesIO` from a string."""
-    stype = ask(s)
-    if stype is Str:
-        return io.StringIO(s)
-    if stype is Bytes:
-        return io.BytesIO(s)
-    raise TypeError('cannot open non-string')
-
-
 def ask(s):
     """Ask a string for its type."""
     for t in (Str, Bytes):
@@ -42,16 +32,6 @@ def ask_char(char):
     return None
 
 
-def encode(s):
-    """Convert a string to `bytes`."""
-    stype = ask(s)
-    if stype is Str:
-        return s.encode()
-    if stype is Bytes:
-        return s
-    raise TypeError('cannot encode non-string')
-
-
 def decode(s):
     """Convert a string to `str`."""
     stype = ask(s)
@@ -60,6 +40,16 @@ def decode(s):
     if stype is Bytes:
         return s.decode()
     raise TypeError('cannot decode non-string')
+
+
+def encode(s):
+    """Convert a string to `bytes`."""
+    stype = ask(s)
+    if stype is Str:
+        return s.encode()
+    if stype is Bytes:
+        return s
+    raise TypeError('cannot encode non-string')
 
 
 def probe(s):
@@ -78,6 +68,16 @@ def probe(s):
     if stype is None:
         raise TypeError('iterable yields neither bytes nor str characters')
     return stype, itertools.chain((first,), s)
+
+
+def StringIO(s):
+    """Create a `StringIO` or `BytesIO` from a string."""
+    stype = ask(s)
+    if stype is Str:
+        return io.StringIO(s)
+    if stype is Bytes:
+        return io.BytesIO(s)
+    raise TypeError('cannot open non-string')
 
 
 class SType:
