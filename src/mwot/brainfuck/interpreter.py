@@ -6,18 +6,22 @@ import sys
 from ..compiler import bits_from_mwot
 from ..exceptions import InterpreterError
 from ..join import joinable
-from ..util import decode, deshebang
-from . import cmds, from_bits as bf_from_bits
+from ..util import deshebang
+from . import cmds
+from . import from_bits as bf_from_bits
 
 cmds_str = cmds.decode('ascii')
+# Map bytes and str cmds to str cmds
+cmd_map = {k: v for i in (cmds, cmds_str) for k, v in zip(i, cmds_str)}
 
 
 @joinable(str)
-def clean_bf(chars):
-    """Remove non-brainfuck characters from a string."""
-    for char in chars:
-        if char in cmds_str:
-            yield char
+def clean_bf(s):
+    """Remove non-brainfuck characters and convert to `str` string-like."""
+    for char in s:
+        cmd = cmd_map.get(char)
+        if cmd is not None:
+            yield cmd
 
 
 def run_mwot(mwot, **options):
@@ -50,7 +54,6 @@ def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
     pc = 0
     pointer = 0
 
-    brainfuck = decode(brainfuck)
     if shebang_in:
         brainfuck = deshebang(brainfuck)
     brainfuck = clean_bf(brainfuck).join()

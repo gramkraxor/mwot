@@ -1,7 +1,8 @@
 """Different ways to feed source code to the CLI."""
 
-import io
 import sys
+
+from .. import stypes
 
 
 class Source:
@@ -13,10 +14,8 @@ class Source:
 
     def open(self):
         if self.pathstr == '-':
-            if self.stype is bytes:
-                return sys.stdin.buffer
-            return sys.stdin
-        mode = 'rb' if self.stype is bytes else 'r'
+            return self.stype.buffer(sys.stdin)
+        mode = self.stype.iomode('r')
         return open(self.pathstr, mode)
 
     def read(self):
@@ -28,14 +27,12 @@ class StringSource(Source):
     """Source string type."""
 
     def __init__(self, string):
-        stype = bytes if isinstance(string, bytes) else str
+        stype = stypes.ask(string)
         super().__init__('-', stype)
         self.string = string
 
     def open(self):
-        if self.stype is bytes:
-            return io.BytesIO(self.string)
-        return io.StringIO(self.string)
+        return stypes.StringIO(self.string)
 
     def read(self):
         return self.string

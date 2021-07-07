@@ -6,6 +6,7 @@ import re
 
 from ..compiler import bits_from_mwot
 from .. import decompilers
+from .. import stypes
 from ..util import deshebang
 from .exceptions import OutfileFormatError
 from .parsing import unspecified
@@ -16,12 +17,6 @@ i_bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
 
 re_double_braces = re.compile(r'\{\{|\}\}')
 re_complex_specifier = re.compile(r'\{\w*[^\w{}]+\w*\}')
-
-
-def buffer(textio, stype):
-    if stype is bytes:
-        return textio.buffer
-    return textio
 
 
 def format_outfile(pattern, pathstr):
@@ -53,24 +48,18 @@ def get_input(parsed):
     if parsed.input is not None:
         return StringSource(parsed.input.encode())
     if parsed.infile != '-':
-        return Source(parsed.infile, bytes)
+        return Source(parsed.infile, stypes.Bytes)
     if parsed.source is None and '-' in parsed.srcfiles:
         return StringSource('')
-    return Source('-', bytes)
+    return Source('-', stypes.Bytes)
 
 
 def get_sources(parsed, stype):
     """Retrieve the correct code source(s) from `parsed`."""
     if parsed.source is not None:
-        string = parsed.source.encode() if stype is bytes else parsed.source
+        string = stype.convert(parsed.source)
         return [StringSource(string)]
     return [Source(i, stype) for i in parsed.srcfiles]
-
-
-def open_mode(str_mode, stype):
-    if stype is bytes:
-        return f'{str_mode}b'
-    return f'{str_mode}t'
 
 
 def specced(parsed, keywords):
@@ -101,12 +90,12 @@ class TranspilerAction(Action):
         for source in get_sources(self.args, self.stype_in):
             output = self.transpile(source.read())
             if self.args.outfile == '-':
-                with buffer(sys.stdout, self.stype_out) as f:
+                with self.stype_out.buffer(sys.stdout) as f:
                     self.write(f, output)
             else:
                 outfile_path = format_outfile(self.args.outfile,
                                               source.pathstr)
-                mode = open_mode('w', self.stype_out)
+                mode = self.stype_out.iomode('w')
                 with open(outfile_path, mode) as f:
                     self.write(f, output)
 
@@ -118,8 +107,8 @@ class TranspilerAction(Action):
 
 class Compile(TranspilerAction):
 
-    stype_in = str
-    stype_out = bytes
+    stype_in = stypes.Str
+    stype_out = stypes.Bytes
     bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
 
     def transpile(self, source_code):
@@ -133,15 +122,15 @@ class Compile(TranspilerAction):
 
 class Decompile(TranspilerAction):
 
-    stype_in = bytes
-    stype_out = str
+    stype_in = stypes.Bytes
+    stype_out = stypes.Str
     bf_shebang = '#!/usr/bin/env mwot-i-bf\n'
     keywords = ('width', 'dummies', 'cols')
 
     def transpile(self, source_code):
         decomp = getattr(decompilers, self.args.decompiler).decomp
         if self.args.shebang_in:
-            source_code = deshebang(source_code, bytes)
+            source_code = deshebang(source_code)
         return decomp(self.format.to_bits(source_code), **self.kwargs)
 
 
@@ -156,7 +145,7 @@ class InterpreterAction(Action):
 
 class Interpret(InterpreterAction):
 
-    stype_in = str
+    stype_in = stypes.Str
     keywords = ('cellsize', 'eof', 'totalcells', 'wrapover')
 
     def execute(self, source_code):
@@ -165,7 +154,7 @@ class Interpret(InterpreterAction):
 
 class Execute(InterpreterAction):
 
-    stype_in = bytes
+    stype_in = stypes.Bytes
     keywords = ('shebang_in', 'cellsize', 'eof', 'totalcells', 'wrapover')
 
     def execute(self, source_code):

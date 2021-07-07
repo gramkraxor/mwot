@@ -2,8 +2,7 @@
 
 import itertools
 
-ascii_range = range(128)
-byte_range = range(256)
+from . import stypes
 
 
 def chunks(it, size):
@@ -16,95 +15,32 @@ def chunks(it, size):
         yield chunk
 
 
-def decode(chars, ensure=True):
-    """Convert an iterable of ints or strs into a str iterable."""
-    if isinstance(chars, str):
-        return chars
-    if isinstance(chars, bytes):
-        return chars.decode('ascii', errors='ignore')
-    stype, chars = probe_stype(chars)
-    if stype is str:
-        return ensure_str(chars) if ensure else chars
-    if ensure:
-        chars = ensure_bytes(chars)
-    return (chr(c) for c in chars if c in ascii_range)
-
-
-def deshebang(chars, stype=str):
+def deshebang(s):
     """Remove a leading shebang line."""
-    if stype is str:
-        shebang = '#!'
-        newline = '\n'
-        join = ''.join
-    elif stype is bytes:
-        shebang = b'#!'
-        newline = ord('\n')
-        join = bytes
-    else:
-        raise TypeError('stype must be str or bytes')
-    chars = iter(chars)
-    leading = join(itertools.islice(chars, len(shebang)))
+    stype, s = stypes.probe(s)
+    shebang = stype.convert('#!')
+    newline = stype.ord('\n')
+    leading = stype.join(itertools.islice(s, len(shebang)))
     if leading == shebang:
         # Drop the rest of the line.
-        for char in chars:
+        for char in s:
             if char == newline:
                 break
     else:
         yield from leading
-    yield from chars
+    yield from s
 
 
-def ensure_bytes(chars):
-    """Make sure every item in the iterable is a byte."""
-    for char in chars:
-        if not isinstance(char, int) or char not in byte_range:
-            raise TypeError('iterable does not exclusively yield bytes')
-        yield char
-
-
-def ensure_str(chars):
-    """Make sure every item in the iterable is a str character."""
-    for char in chars:
-        if not isinstance(char, str) or len(char) != 1:
-            raise TypeError('iterable does not exclusively yield str '
-                            'characters')
-        yield char
-
-
-def probe_stype(chars):
-    """Probe a string iterable for its type.
-
-    Checks whether the first item is an int or a str, corresponding to
-    bytes and str, respectively.
-
-    Returns (stype, chars). The returned chars should replace the old
-    chars, since the old chars will be partially exhausted.
-    """
-    chars = iter(chars)
-    try:
-        first = next(chars)
-    except StopIteration:
-        # Consider an empty iterable a str.
-        return str, iter(())
-    if isinstance(first, str):
-        stype = str
-    elif isinstance(first, int):
-        stype = bytes
-    else:
-        raise TypeError('iterable yields neither bytes nor str characters')
-    return stype, itertools.chain((first,), chars)
-
-
-def split(chars):
-    """Split a string/iterable on whitespace."""
-    chars = iter(chars)
+def split(s):
+    """Split a `str` string-like on whitespace."""
+    s = iter(s)
 
     def nextword():
-        for char in chars:
+        for char in s:
             if not char.isspace():
                 yield char
                 break
-        for char in chars:
+        for char in s:
             if char.isspace():
                 break
             yield char
