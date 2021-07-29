@@ -16,7 +16,7 @@ x_bf_shebang = '#!/usr/bin/env mwot-i-bf\n'
 i_bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
 
 re_double_braces = re.compile(r'\{\{|\}\}')
-re_complex_specifier = re.compile(r'\{\w*[^\w{}]+\w*\}')
+re_complex_specifier = re.compile(r'\{[^}]*[^\w}][^}]*\}')
 
 
 def format_outfile(pattern, pathstr):
