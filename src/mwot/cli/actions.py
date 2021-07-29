@@ -1,8 +1,10 @@
 """CLI actions: compile, decompile, interpret, execute."""
 
-import sys
+import os
 from pathlib import PurePath
 import re
+import stat
+import sys
 
 from ..compiler import bits_from_mwot
 from .. import decompilers
@@ -17,6 +19,19 @@ i_bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
 
 re_double_braces = re.compile(r'\{\{|\}\}')
 re_complex_specifier = re.compile(r'\{[^}]*[^\w}][^}]*\}')
+
+
+def chmod_x(f):
+    """Set an open file as executable, if possible."""
+    if not hasattr(os, 'fchmod'):
+        return
+    fd = f.fileno()
+    st_mode = os.stat(fd).st_mode
+    if stat.S_ISREG(st_mode):  # Only change regular files.
+        mask = os.umask(0o077)
+        os.umask(mask)
+        mode = stat.S_IMODE(st_mode | (0o111 & ~mask))
+        os.fchmod(fd, mode)
 
 
 def format_outfile(pattern, pathstr):
@@ -115,6 +130,8 @@ class Compile(TranspilerAction):
         return self.format.from_bits(bits_from_mwot(source_code)).join()
 
     def write(self, f, output):
+        if self.args.executable_out:
+            chmod_x(f)
         super().write(f, output)
         if self.args.format == 'brainfuck':
             f.write(b'\n')
@@ -132,6 +149,11 @@ class Decompile(TranspilerAction):
         if self.args.shebang_in:
             source_code = deshebang(source_code)
         return decomp(self.format.to_bits(source_code), **self.kwargs)
+
+    def write(self, f, output):
+        if self.args.executable_out and self.args.format == 'brainfuck':
+            chmod_x(f)
+        super().write(f, output)
 
 
 class InterpreterAction(Action):
