@@ -21,7 +21,7 @@ Coming soon!
 
 """
 
-unspecified = object()  # Indicates that kwargs should not be passed
+Unspecified = object()  # Indicates that kwargs should not be passed
 
 
 def parse(args):
@@ -142,7 +142,7 @@ def parse(args):
         '--width',
         metavar='WIDTH',
         type=ArgUnion(PosIntArg, NoneArg),
-        default=unspecified,
+        default=Unspecified,
         help=f"(basic, rand) wrap width (default: {default_width})",
     )
     default_dummies_str = ' '.join(map(repr, default_dummies))
@@ -150,7 +150,7 @@ def parse(args):
         '--dummies',
         metavar='WORD',
         nargs=2,
-        default=unspecified,
+        default=Unspecified,
         help=(f'(basic, guide) even and odd words (default: '
               f'{default_dummies_str})'),
     )
@@ -158,7 +158,7 @@ def parse(args):
         '--cols',
         metavar='COLS',
         type=PosIntArg,
-        default=unspecified,
+        default=Unspecified,
         help="(guide) bits per row (default: 8)",
     )
 
@@ -192,14 +192,14 @@ def parse(args):
         '--cellsize',
         metavar='BITS',
         type=ArgUnion(PosIntArg, NoneArg),
-        default=unspecified,
+        default=Unspecified,
         help='bits per cell (default: 8)',
     )
     i_bf_opts.add_argument(
         '--eof',
         metavar='VAL',
         type=ArgUnion(IntArg, NoneArg),
-        default=unspecified,
+        default=Unspecified,
         help=('int to read in after EOF, or \'none\' for "no change" behavior '
               '(default: none)'),
     )
@@ -207,14 +207,14 @@ def parse(args):
         '--totalcells',
         metavar='CELLS',
         type=NonnegIntArg,
-        default=unspecified,
+        default=Unspecified,
         help='total cells (0 for dynamic allocation) (default: 30_000)',
     )
     i_bf_opts.add_argument(
         '--wrapover',
         metavar='BOOL',
         type=BooleanArg,
-        default=unspecified,
+        default=Unspecified,
         help=('whether the cell pointer wraps around / whether "dynamic '
               'allocation" includes negative indices (default: true)'),
     )

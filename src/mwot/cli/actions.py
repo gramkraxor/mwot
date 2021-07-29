@@ -9,7 +9,7 @@ from .. import decompilers
 from .. import stypes
 from ..util import deshebang
 from .exceptions import OutfileFormatError
-from .parsing import unspecified
+from .parsing import Unspecified
 from .sources import Source, StringSource
 
 x_bf_shebang = '#!/usr/bin/env mwot-i-bf\n'
@@ -63,11 +63,11 @@ def get_sources(parsed, stype):
 
 
 def specced(parsed, keywords):
-    """Get a dictionary of non-`unspecified` attributes from `parsed`."""
+    """Get a dictionary of non-`Unspecified` attributes from `parsed`."""
     d = {}
     for k in keywords:
         v = getattr(parsed, k)
-        if v is not unspecified:
+        if v is not Unspecified:
             d[k] = v
     return d
 
