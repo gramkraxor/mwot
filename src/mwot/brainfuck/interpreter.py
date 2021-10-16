@@ -93,14 +93,9 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
         elif eof is not None:
             memory[pointer] = eof
 
-    def loop():
+    def jump(truthiness):
         nonlocal pc
-        if not memory[pointer]:
-            pc = jumps[pc]
-
-    def end():
-        nonlocal pc
-        if memory[pointer]:
+        if bool(memory[pointer]) == truthiness:
             pc = jumps[pc]
 
     instruction_map = {
@@ -110,8 +105,8 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
         '-': lambda: increment(-1),
         '.': write,
         ',': read,
-        '[': loop,
-        ']': end,
+        '[': lambda: jump(False),
+        ']': lambda: jump(True),
     }
 
     while pc < len(brainfuck):
