@@ -29,9 +29,8 @@ def run_mwot(mwot, **options):
     run(bf_from_bits(bits_from_mwot(mwot)), shebang_in=False, **options)
 
 
-def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
-        cellsize=8, eof=None, shebang_in=True, totalcells=30_000,
-        wrapover=True):
+def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
+        shebang_in=True, totalcells=30_000, wrapover=True):
     """Run brainfuck code.
 
     I/O is done in `bytes`, not `str`.
@@ -46,7 +45,14 @@ def run(brainfuck, infile=sys.stdin.buffer, outfile=sys.stdout.buffer,
         wrapover: Whether to overflow instead of error when the pointer
             goes out of bounds. Also determines whether "dynamic size"
             includes negative indices.
+
+    infile and outfile default to sys.stdin.buffer and
+    sys.stdout.buffer, respectively.
     """
+    if infile is None:
+        infile = sys.stdin.buffer
+    if outfile is None:
+        outfile = sys.stdout.buffer
     if totalcells:
         memory = [0] * totalcells
     else:
