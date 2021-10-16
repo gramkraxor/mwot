@@ -9,15 +9,17 @@ from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
 
 description = """
 
-Usage: mwot OPTIONS [SRCFILE...]
+Usage:
+  mwot -(c|d)(b|B) [SRCFILE...]
+  mwot -(i|x)b [SRCFILE]
 
-MWOT: an esolang.
+MWOT: an esoteric... language? Encoding?
 
 """
 
 epilog = """
 
-Coming soon!
+More help coming soon.
 
 """
 
@@ -52,21 +54,21 @@ def parse(args):
         dest='action',
         action='store_const',
         const='compile',
-        help='compile MWOT to brainfuck or to bytes',
+        help='compile MWOT',
     )
     action_mx_opts.add_argument(
         '-d', '--decompile',
         dest='action',
         action='store_const',
         const='decompile',
-        help='decompile brainfuck or bytes to MWOT',
+        help='decompile to MWOT',
     )
     action_mx_opts.add_argument(
         '-i', '--interpret',
         dest='action',
         action='store_const',
         const='interpret',
-        help='(with -b) interpret (execute) MWOT as brainfuck',
+        help='(with -b) execute MWOT as brainfuck',
     )
     action_mx_opts.add_argument(
         '-x', '--execute',
@@ -99,14 +101,14 @@ def parse(args):
         '--src', '--source',
         dest='source',
         metavar='SRC',
-        help="supply source code as an argument, don't accept SRCFILE",
+        help="take source code as an argument; don't accept SRCFILE",
     )
     main_opts.add_argument(
         '-o', '--output-file',
         dest='outfile',
         metavar='OUTFILE',
         default='-',
-        help="output file or pattern (absent or '-' for stdout)",
+        help="output file pattern (absent or '-' for stdout)",
     )
     main_opts.add_argument(
         '--help',
@@ -136,7 +138,7 @@ def parse(args):
         metavar='DECOMPILER',
         type=DecompilerArg,
         default='rand',
-        help="decompiler to use (default: 'rand')",
+        help='decompiler to use (default: rand)',
     )
     decomp_opts.add_argument(
         '--width',
@@ -151,7 +153,7 @@ def parse(args):
         metavar='WORD',
         nargs=2,
         default=Unspecified,
-        help=(f'(basic, guide) even and odd words (default: '
+        help=(f'(basic, guide) words for zero and one (default: '
               f'{default_dummies_str})'),
     )
     decomp_opts.add_argument(
@@ -186,7 +188,7 @@ def parse(args):
     input_mx_opts.add_argument(
         '--input',
         metavar='INPUT',
-        help='supply input as an argument',
+        help='take input as an argument',
     )
     i_bf_opts.add_argument(
         '--cellsize',
