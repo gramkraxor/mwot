@@ -46,13 +46,10 @@ def format_outfile(pattern, pathstr):
     try:
         return pattern.format(
             name=path.name,
-            file=path.name,
             stem=path.stem,
-            root=path.stem,
             suffix=path.suffix,
-            ext=path.suffix,
             path=path,
-            parent=path.parent,
+            dir=path.parent,
         )
     except (IndexError, KeyError, ValueError) as err:
         raise OutfileFormatError(f'bad outfile pattern: {pattern!r}') from err
