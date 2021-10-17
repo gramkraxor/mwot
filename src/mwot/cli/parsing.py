@@ -104,13 +104,6 @@ def parse(args):
         help="take source code as an argument; don't accept SRCFILE",
     )
     main_opts.add_argument(
-        '-o', '--output-file',
-        dest='outfile',
-        metavar='OUTFILE',
-        default='-',
-        help="output file pattern (absent or '-' for stdout)",
-    )
-    main_opts.add_argument(
         '--help',
         action='help',
         help='show this help and exit',
@@ -122,6 +115,13 @@ def parse(args):
         help='show version info and exit',
     )
 
+    trans_opts.add_argument(
+        '-o', '--output-file',
+        dest='outfile',
+        metavar='OUTFILE',
+        default='-',
+        help="output file pattern (absent or '-' for stdout)",
+    )
     trans_opts.add_argument(
         '-S', '--shebang-out',
         action='store_true',
