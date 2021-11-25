@@ -19,7 +19,7 @@ MWOT: an esoteric... language? Encoding?
 
 epilog = """
 
-More help coming soon.
+More help coming soon!
 
 """
 
@@ -98,9 +98,9 @@ def parse(args):
         help="source file(s) (absent or '-' for stdin)",
     )
     source_opt = main_opts.add_argument(
-        '--src', '--source',
+        '--source',
         dest='source',
-        metavar='SRC',
+        metavar='SOURCE',
         help="take source code as an argument; don't accept SRCFILE",
     )
     main_opts.add_argument(
@@ -140,13 +140,6 @@ def parse(args):
         default='rand',
         help='decompiler to use (default: rand)',
     )
-    decomp_opts.add_argument(
-        '--width',
-        metavar='WIDTH',
-        type=ArgUnion(PosIntArg, NoneArg),
-        default=Unspecified,
-        help=f"(basic, rand) wrap width (default: {default_width})",
-    )
     default_dummies_str = ' '.join(map(repr, default_dummies))
     decomp_opts.add_argument(
         '--dummies',
@@ -155,6 +148,13 @@ def parse(args):
         default=Unspecified,
         help=(f'(basic, guide) words for zero and one (default: '
               f'{default_dummies_str})'),
+    )
+    decomp_opts.add_argument(
+        '--width',
+        metavar='WIDTH',
+        type=ArgUnion(PosIntArg, NoneArg),
+        default=Unspecified,
+        help=f"(basic, rand) wrap width (default: {default_width})",
     )
     decomp_opts.add_argument(
         '--cols',
@@ -167,7 +167,7 @@ def parse(args):
     bf_src_opts.add_argument(
         '--shebang-in',
         action='store_true',
-        help='ignore any shebang in source (default)',
+        help='skip over any shebang in source (default)',
     )
     bf_src_opts.add_argument(
         '--no-shebang-in',
