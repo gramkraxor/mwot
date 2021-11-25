@@ -94,7 +94,7 @@ def PosIntArg(val):
     return num
 
 
-@argtype('vocab')
+@argtype('vocab', casefold=False)
 def VocabArg(val):
     desired = (0, 1)
     words = tuple(split(val))
