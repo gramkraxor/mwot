@@ -1,5 +1,8 @@
 """Fancy argparse type conversion."""
 
+from ..compiler import bits_from_mwot
+from ..util import split
+
 truthies = {'true', 't', 'yes', 'y', '1'}
 falsies = {'false', 'f', 'no', 'n', '0'}
 
@@ -89,3 +92,14 @@ def PosIntArg(val):
     if num <= 0:
         raise ValueError('nonpositive int')
     return num
+
+
+@argtype('vocab')
+def VocabArg(val):
+    desired = (0, 1)
+    words = tuple(split(val))
+    if len(words) != len(desired):
+        raise ValueError('wrong number of words')
+    if tuple(bits_from_mwot(val)) != desired:
+        raise ValueError(f'bits not {desired}')
+    return words

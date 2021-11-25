@@ -5,7 +5,7 @@ import argparse
 from .. import __version__
 from ..decompilers.common import default_dummies, default_width
 from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
-                       NonnegIntArg, PosIntArg)
+                       NonnegIntArg, PosIntArg, VocabArg)
 
 description = """
 
@@ -140,14 +140,15 @@ def parse(args):
         default='rand',
         help='decompiler to use (default: rand)',
     )
-    default_dummies_str = ' '.join(map(repr, default_dummies))
+    default_vocab_str = repr(' '.join(default_dummies))
     decomp_opts.add_argument(
-        '--dummies',
-        metavar='WORD',
-        nargs=2,
+        '--vocab',
+        dest='dummies',
+        metavar='WORDS',
+        type=VocabArg,
         default=Unspecified,
         help=(f'(basic, guide) words for zero and one (default: '
-              f'{default_dummies_str})'),
+              f'{default_vocab_str})'),
     )
     decomp_opts.add_argument(
         '--width',
