@@ -12,8 +12,8 @@ Instructions are mapped to bits in the following order:
 """
 
 import itertools
+import warnings
 
-from ..exceptions import CompilerError
 from ..join import joinable
 from ..util import chunks
 
@@ -30,8 +30,11 @@ def from_bits(bits):
     """Yield brainfuck instructions from MWOT bits."""
     chunk_size = 3
     for chunk in chunks(bits, chunk_size):
-        if len(chunk) != chunk_size:
-            raise CompilerError(f'word count not divisible by {chunk_size}')
+        if len(chunk) < chunk_size:
+            chunk += (0,) * (chunk_size - len(chunk))
+            message = (f'word count not divisible by {chunk_size}; trailing '
+                       f'zero(s) added')
+            warnings.warn(message, RuntimeWarning)
         yield cmdmap[chunk]
 
 

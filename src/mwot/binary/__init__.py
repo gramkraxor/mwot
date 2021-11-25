@@ -1,8 +1,8 @@
 """Binary (bytes) language: conversions between bytes and MWOT bits."""
 
 import itertools
+import warnings
 
-from ..exceptions import CompilerError
 from ..join import joinable
 from ..util import chunks
 
@@ -14,8 +14,11 @@ def from_bits(bits):
     """Yield bytes from MWOT bits."""
     chunk_size = 8
     for chunk in chunks(bits, chunk_size):
-        if len(chunk) != chunk_size:
-            raise CompilerError(f'word count not divisible by {chunk_size}')
+        if len(chunk) < chunk_size:
+            chunk += (0,) * (chunk_size - len(chunk))
+            message = (f'word count not divisible by {chunk_size}; trailing '
+                       f'zero(s) added')
+            warnings.warn(message, RuntimeWarning)
         yield sum(b << i for i, b in zip(bitrange, chunk))
 
 
