@@ -141,7 +141,7 @@ class Decompile(TranspilerAction):
     stype_in = stypes.Bytes
     stype_out = stypes.Str
     bf_shebang = '#!/usr/bin/env mwot-i-bf\n'
-    keywords = ('width', 'dummies', 'cols')
+    keywords = ('width', 'vocab', 'cols')
 
     def transpile(self, source_code):
         decomp = getattr(decompilers, self.args.decompiler).decomp
