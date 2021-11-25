@@ -1,6 +1,7 @@
 """General functions, etc."""
 
 import itertools
+import warnings
 
 from . import stypes
 
@@ -12,6 +13,17 @@ def chunks(it, size):
     """
     it = iter(it)
     while chunk := tuple(itertools.islice(it, size)):
+        yield chunk
+
+
+def chunk_bits(bits, chunk_size):
+    """Break bits into chunks for encoding."""
+    for chunk in chunks(bits, chunk_size):
+        if len(chunk) < chunk_size:
+            chunk += (0,) * (chunk_size - len(chunk))
+            message = (f'word count not divisible by {chunk_size}; trailing '
+                       f'zero(s) added')
+            warnings.warn(message, RuntimeWarning)
         yield chunk
 
 
