@@ -2,7 +2,7 @@
 
 from ..join import joinable
 from ..util import chunks
-from .share import default_dummies
+from .common import default_dummies
 
 
 @joinable(str)

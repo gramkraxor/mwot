@@ -3,7 +3,7 @@
 import argparse
 
 from .. import __version__
-from ..decompilers.share import default_dummies, default_width
+from ..decompilers.common import default_dummies, default_width
 from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
                        NonnegIntArg, PosIntArg)
 
