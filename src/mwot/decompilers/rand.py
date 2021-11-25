@@ -3,14 +3,13 @@
 import random
 from string import ascii_lowercase
 
-from .share import default_width, wrap_source
+from .share import default_width, wrap_words
 
 
 def decomp(bits, width=default_width, **_):
     """Decompile to words of random length with random letters."""
     words = map(rand_word, bits)
-    unwrapped = ' '.join(words)
-    return wrap_source(unwrapped, width=width)
+    return wrap_words(words, width=width)
 
 
 def rand_word(bit):

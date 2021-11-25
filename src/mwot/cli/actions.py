@@ -9,7 +9,7 @@ import sys
 from ..compiler import bits_from_mwot
 from .. import decompilers
 from .. import stypes
-from ..util import deshebang
+from ..util import chunks, deshebang
 from .exceptions import OutfileFormatError
 from .parsing import Unspecified
 from .sources import Source, StringSource
@@ -111,7 +111,12 @@ class TranspilerAction(Action):
     def write(self, f, output):
         if self.args.shebang_out and self.args.format == 'brainfuck':
             f.write(self.bf_shebang)
-        f.write(output)
+        if self.stype_out is stypes.Bytes:
+            for chunk in chunks(output, 80):
+                f.write(bytes(chunk))
+        else:
+            for i in output:
+                f.write(i)
 
 
 class Compile(TranspilerAction):
@@ -121,7 +126,7 @@ class Compile(TranspilerAction):
     bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
 
     def transpile(self, source_code):
-        return self.format.from_bits(bits_from_mwot(source_code)).join()
+        return self.format.from_bits(bits_from_mwot(source_code))
 
     def write(self, f, output):
         if self.args.executable_out:

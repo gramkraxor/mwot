@@ -1,9 +1,11 @@
 """Output a guide to help write your own MWOT from your desired bits."""
 
+from ..join import joinable
 from ..util import chunks
 from .share import default_dummies
 
 
+@joinable(str)
 def decomp(bits, cols=8, dummies=default_dummies, no_bit='-', **_):
     """Decompile to a guide for writing MWOT source.
 
@@ -14,9 +16,7 @@ def decomp(bits, cols=8, dummies=default_dummies, no_bit='-', **_):
         110011  x x zz zz x x
         111---  x x x
     """
-    def lines():
-        for row in chunks(bits, cols):
-            line_bits = ''.join(map(str, row)).ljust(cols, no_bit)
-            line_dummies = ' '.join(dummies[i] for i in row)
-            yield f'{line_bits}  {line_dummies}\n'
-    return ''.join(lines())
+    for row in chunks(bits, cols):
+        line_bits = ''.join(map(str, row)).ljust(cols, no_bit)
+        line_dummies = ' '.join(dummies[i] for i in row)
+        yield f'{line_bits}  {line_dummies}\n'
