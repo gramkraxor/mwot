@@ -13,7 +13,7 @@ class Joinable:
     }
 
     def __init__(self, iterator, seq_type=None, function=None):
-        self.iterator = iterator
+        self.iterator = iter(iterator)
         self.seq_type = seq_type
         self.collect = self._collectors.get(seq_type, seq_type)
         self.function = function
