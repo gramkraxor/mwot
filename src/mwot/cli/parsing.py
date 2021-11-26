@@ -10,7 +10,7 @@ from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
 description = """
 
 Usage:
-  mwot -(c|d)(b|B) [SRCFILE...]
+  mwot -(c|d)(b|y) [SRCFILE...]
   mwot -(i|x)b [SRCFILE]
 
 MWOT: an esoteric... language? Encoding?
@@ -85,7 +85,7 @@ def parse(args):
         help='use brainfuck format',
     )
     format_mx_opts.add_argument(
-        '-B', '--bytes', '--binary',
+        '-y', '--bytes', '--binary',
         dest='format',
         action='store_const',
         const='binary',
@@ -130,7 +130,7 @@ def parse(args):
     trans_opts.add_argument(
         '-X', '--executable-out',
         action='store_true',
-        help='(with -b or -cB) make output files executable',
+        help='(with -b or -cy) make output files executable',
     )
 
     decomp_opts.add_argument(
