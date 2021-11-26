@@ -123,7 +123,7 @@ class Compile(TranspilerAction):
 
     stype_in = stypes.Str
     stype_out = stypes.Bytes
-    bf_shebang = b'#!/usr/bin/env mwot-x-bf\n'
+    bf_shebang = b'#!/usr/bin/env -S mwot -xb\n'
 
     def transpile(self, source_code):
         return self.format.from_bits(bits_from_mwot(source_code))
@@ -140,7 +140,7 @@ class Decompile(TranspilerAction):
 
     stype_in = stypes.Bytes
     stype_out = stypes.Str
-    bf_shebang = '#!/usr/bin/env mwot-i-bf\n'
+    bf_shebang = '#!/usr/bin/env -S mwot -ib\n'
     keywords = ('width', 'vocab', 'cols')
 
     def transpile(self, source_code):

@@ -34,13 +34,3 @@ def main(args=None, prefix_args=()):
     except (KeyboardInterrupt, BrokenPipeError):
         pass
     sys.exit(0)
-
-
-def mwot_i_bf(args=None):
-    """Shebang helper to run brainfuck MWOT."""
-    main(args, prefix_args=['-ib'])
-
-
-def mwot_x_bf(args=None):
-    """Shebang helper to run brainfuck."""
-    main(args, prefix_args=['-xb'])
