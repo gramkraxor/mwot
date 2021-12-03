@@ -52,24 +52,6 @@ def encode(s):
     raise TypeError('cannot encode non-string')
 
 
-def probe(s):
-    """Probe a string-like for its type with `next(iter(s))`.
-
-    Returns (`stype`, `s`). The returned `s` should replace the old `s`,
-    since the old `s` will be partially exhausted.
-    """
-    s = iter(s)
-    try:
-        first = next(s)
-    except StopIteration:
-        # Consider an empty iterable a str.
-        return Str, itertools.chain(())
-    stype = ask_char(first)
-    if stype is None:
-        raise TypeError('iterable yields neither bytes nor str characters')
-    return stype, itertools.chain((first,), s)
-
-
 def StringIO(s):
     """Create a `StringIO` or `BytesIO` from a string."""
     stype = ask(s)
@@ -127,3 +109,22 @@ class Bytes(SType):
     _ord = ord
     type = bytes
     chartype = int
+
+
+def probe(s, default=Str):
+    """Probe a string-like for its type with `next(iter(s))`.
+
+    Returns (`stype`, `s2`). The returned `s2` should replace `s`, since
+    `s` will be partially exhausted.
+
+    If `s` yields nothing, the returned `stype` will be `default`.
+    """
+    s = iter(s)
+    try:
+        first = next(s)
+    except StopIteration:
+        return default, itertools.chain(())
+    stype = ask_char(first)
+    if stype is None:
+        raise TypeError('iterable yields neither bytes nor str characters')
+    return stype, itertools.chain((first,), s)
