@@ -7,26 +7,38 @@ from ..compiler import bits_from_mwot
 from ..exceptions import InterpreterError
 from ..join import joinable
 from ..util import deshebang
-from . import cmds
-from . import from_bits as bf_from_bits
+from . import cmds, from_bits as bf_from_bits
 
-cmds_str = cmds.decode('ascii')
 # Map bytes and str cmds to str cmds
-cmd_map = {k: v for i in (cmds, cmds_str) for k, v in zip(i, cmds_str)}
+cmds_str = cmds.decode('ascii')
+decoder = {k: v for i in (cmds, cmds_str) for k, v in zip(i, cmds_str)}
 
 
 @joinable(str)
 def clean_bf(s):
     """Remove non-brainfuck characters and convert to `str` string-like."""
     for char in s:
-        cmd = cmd_map.get(char)
+        cmd = decoder.get(char)
         if cmd is not None:
             yield cmd
 
 
-def run_mwot(mwot, **options):
-    """Compile MWOT to brainfuck and execute it."""
-    run(bf_from_bits(bits_from_mwot(mwot)), shebang_in=False, **options)
+def get_jumps(brainfuck):
+    """Match brackets and map their positions to each other."""
+    stack = []
+    jumps = {}
+    for pc, cmd in enumerate(brainfuck):
+        if cmd == '[':
+            stack.append(pc)
+        elif cmd == ']':
+            try:
+                target = stack.pop()
+            except IndexError:
+                raise InterpreterError("unmatched ']'") from None
+            jumps[pc], jumps[target] = target, pc
+    if stack:
+        raise InterpreterError("unmatched '['")
+    return jumps
 
 
 def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
@@ -115,19 +127,6 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
         pc += 1
 
 
-def get_jumps(brainfuck):
-    """Match brackets and map their positions to each other."""
-    stack = []
-    jumps = {}
-    for pc, cmd in enumerate(brainfuck):
-        if cmd == '[':
-            stack.append(pc)
-        elif cmd == ']':
-            try:
-                target = stack.pop()
-            except IndexError:
-                raise InterpreterError("unmatched ']'") from None
-            jumps[pc], jumps[target] = target, pc
-    if stack:
-        raise InterpreterError("unmatched '['")
-    return jumps
+def run_mwot(mwot, **options):
+    """Compile MWOT to brainfuck and execute it."""
+    run(bf_from_bits(bits_from_mwot(mwot)), shebang_in=False, **options)
