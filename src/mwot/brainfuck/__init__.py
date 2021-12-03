@@ -14,6 +14,7 @@ Instructions are mapped to bits in the following order:
 import itertools
 
 from ..join import joinable
+from .. import stypes
 from ..util import chunk_bits
 
 cmds = b'><+-.,[]'
@@ -33,7 +34,10 @@ def from_bits(bits):
 
 @joinable()
 def to_bits(chars):
-    """Convert a string of brainfuck to a chain of MWOT bits."""
+    """Convert brainfuck to MWOT bits."""
+    stype, chars = stypes.probe(chars)
+    if stype is not stypes.Bytes:
+        raise TypeError('chars must yield bytes')
     for cmd in chars:
         yield from chunkmap.get(cmd, ())
 

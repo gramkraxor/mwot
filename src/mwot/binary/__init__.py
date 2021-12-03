@@ -1,6 +1,7 @@
 """Binary (bytes) language: conversions between bytes and MWOT bits."""
 
 from ..join import joinable
+from .. import stypes
 from ..util import chunk_bits
 
 bitrange = range(8)[::-1]
@@ -15,7 +16,10 @@ def from_bits(bits):
 
 @joinable()
 def to_bits(chars):
-    """Convert a string of brainfuck to a chain of MWOT bits."""
+    """Convert bytes to MWOT bits."""
+    stype, chars = stypes.probe(chars)
+    if stype is not stypes.Bytes:
+        raise TypeError('chars must yield bytes')
     for byte in chars:
         for i in bitrange:
             yield (byte >> i) & 1
