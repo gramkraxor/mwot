@@ -6,8 +6,8 @@
     3. Iterables of single-character `str`s
     4. Iterables of `int`s in `range(256)`
 The types are identified in the following ways, respectively:
-    1. Inheritance from `str`
-    2. Inheritance from `bytes`
+    1. Instance of `str`
+    2. Instance of `bytes`
     3. First item yielded is a `str`
     4. First item yielded is an `int`
 """
@@ -114,7 +114,7 @@ class Str(SType):
     _convert = decode
     _iomode = 't'
     _join = ''.join
-    _ord = lambda c: c
+    _ord = lambda c: chr(ord(c))
     type = str
     chartype = str
 
