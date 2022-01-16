@@ -13,13 +13,24 @@ Usage:
   mwot -(c|d)(b|y) [SRCFILE...]
   mwot -(i|x)b [SRCFILE]
 
-MWOT: an esoteric... language? Encoding?
+Transpile MWOT or execute brainfuck.
 
 """
 
 epilog = """
 
-More help coming soon!
+Available decompilers (-D):
+  basic      one word for 0, one word for 1
+  guide      guide to help you write MWOT
+  rand       random letters
+
+OUTFILE (-o) can include substitutions for some parts of SRCFILE:
+  {name}      basename
+  {stem}      basename without file suffix
+  {suffix}    file suffix
+  {path}      SRCFILE
+  {dir}       dirname
+Escape literal braces in OUTFILE as '{{' and '}}'.
 
 """
 
