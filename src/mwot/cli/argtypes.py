@@ -81,14 +81,6 @@ def NoneArg(val):
     return None
 
 
-@argtype('non-negative integer')
-def NonnegIntArg(val):
-    num = int(val)
-    if num < 0:
-        raise ValueError('negative int')
-    return num
-
-
 @argtype('positive integer')
 def PosIntArg(val):
     num = int(val)
