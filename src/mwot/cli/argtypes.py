@@ -5,8 +5,7 @@ from ..util import split
 
 truthies = {'true', 't', 'yes', 'y', '1'}
 falsies = {'false', 'f', 'no', 'n', '0'}
-
-decompilers = ('basic', 'guide', 'rand')
+decomps = {'basic', 'guide', 'rand'}
 
 
 class ArgType:
@@ -32,14 +31,17 @@ class ArgType:
 
 def argtype(name, casefold=True):
     """Turn a function into an ArgType."""
+
     def decorator(fn):
         return ArgType(name, fn, casefold=casefold)
+
     return decorator
 
 
 def ArgUnion(*argtypes):
     """Create a union of arg types."""
     name = ' or '.join(i.name for i in argtypes).replace(' ', '-')
+
     def function(val):
         for atype in argtypes:
             try:
@@ -47,6 +49,7 @@ def ArgUnion(*argtypes):
             except ValueError:
                 pass
         raise ValueError('unknown type')
+
     return ArgType(name, function)
 
 
@@ -61,7 +64,7 @@ def BooleanArg(val):
 
 @argtype('decompiler')
 def DecompilerArg(val):
-    if val in decompilers:
+    if val in decomps:
         return val
     raise ValueError('unknown decompiler')
 
@@ -73,9 +76,9 @@ def IntArg(val):
 
 @argtype('none')
 def NoneArg(val):
-    if val == 'none':
-        return None
-    raise ValueError('not none')
+    if val != 'none':
+        raise ValueError('not none')
+    return None
 
 
 @argtype('non-negative integer')
