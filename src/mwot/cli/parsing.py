@@ -5,7 +5,7 @@ import argparse
 from .. import __version__
 from ..decompilers.common import default_vocab, default_width
 from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
-                       NonnegIntArg, PosIntArg, VocabArg)
+                       PosIntArg, VocabArg)
 
 description = """
 
@@ -219,9 +219,9 @@ def parse(args):
     i_bf_opts.add_argument(
         '--totalcells',
         metavar='CELLS',
-        type=NonnegIntArg,
+        type=ArgUnion(PosIntArg, NoneArg),
         default=Unspecified,
-        help='total cells (0 for dynamic allocation) (default: 30_000)',
+        help="total cells ('none' for dynamic allocation) (default: 30_000)",
     )
     i_bf_opts.add_argument(
         '--wrapover',
