@@ -165,7 +165,8 @@ def parse(args):
         metavar='WIDTH',
         type=ArgUnion(PosIntArg, NoneArg),
         default=Unspecified,
-        help=f"(basic, rand) wrap width (default: {default_width})",
+        help=(f"(basic, rand) wrap width ('none' for no wrapping) (default: "
+              f"{default_width})"),
     )
     decomp_opts.add_argument(
         '--cols',
