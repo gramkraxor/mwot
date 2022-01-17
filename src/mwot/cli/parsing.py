@@ -224,7 +224,7 @@ def parse(args):
         help="total cells ('none' for dynamic size) (default: 30_000)",
     )
     i_bf_opts.add_argument(
-        '--wrapover',
+        '--wraparound',
         metavar='BOOL',
         type=BooleanArg,
         default=Unspecified,

@@ -42,7 +42,7 @@ def get_jumps(brainfuck):
 
 
 def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
-        shebang_in=True, totalcells=30_000, wrapover=True):
+        shebang_in=True, totalcells=30_000, wraparound=True):
     """Run brainfuck code.
 
     I/O is done in `bytes`, not `str`.
@@ -54,9 +54,9 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
         shebang_in: Whether a leading shebang will be recognized and
             ignored.
         totalcells: Number of cells. Can be falsy for dynamic size.
-        wrapover: Whether to overflow instead of error when the pointer
-            goes out of bounds. Also determines whether "dynamic size"
-            includes negative indices.
+        wraparound: Whether to overflow instead of error when the
+            pointer goes out of bounds. Also determines whether "dynamic
+            size" includes negative indices.
 
     infile and outfile default to sys.stdin.buffer and
     sys.stdout.buffer, respectively.
@@ -80,7 +80,7 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
     def shift(by):
         nonlocal pointer
         pointer += by
-        if wrapover:
+        if wraparound:
             if totalcells:
                 pointer %= totalcells
         elif pointer < 0 or (totalcells and totalcells <= pointer):

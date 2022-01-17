@@ -167,7 +167,7 @@ class InterpreterAction(Action):
 class Interpret(InterpreterAction):
 
     stype_in = stypes.Str
-    keywords = ('cellsize', 'eof', 'totalcells', 'wrapover')
+    keywords = ('cellsize', 'eof', 'totalcells', 'wraparound')
 
     def execute(self, source_code):
         self.format.interpreter.run_mwot(source_code, **self.kwargs)
@@ -176,7 +176,7 @@ class Interpret(InterpreterAction):
 class Execute(InterpreterAction):
 
     stype_in = stypes.Bytes
-    keywords = ('shebang_in', 'cellsize', 'eof', 'totalcells', 'wrapover')
+    keywords = ('shebang_in', 'cellsize', 'eof', 'totalcells', 'wraparound')
 
     def execute(self, source_code):
         self.format.interpreter.run(source_code, **self.kwargs)
