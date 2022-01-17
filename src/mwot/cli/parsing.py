@@ -213,7 +213,7 @@ def parse(args):
         metavar='VAL',
         type=ArgUnion(IntArg, NoneArg),
         default=Unspecified,
-        help=('int to read in after EOF, or \'none\' for "no change" behavior '
+        help=('int to read in after EOF (\'none\' for "no change" behavior) '
               '(default: none)'),
     )
     i_bf_opts.add_argument(
@@ -221,15 +221,14 @@ def parse(args):
         metavar='CELLS',
         type=ArgUnion(PosIntArg, NoneArg),
         default=Unspecified,
-        help="total cells ('none' for dynamic allocation) (default: 30_000)",
+        help="total cells ('none' for dynamic size) (default: 30_000)",
     )
     i_bf_opts.add_argument(
         '--wrapover',
         metavar='BOOL',
         type=BooleanArg,
         default=Unspecified,
-        help=('whether the cell pointer wraps around / whether "dynamic '
-              'allocation" includes negative indices (default: true)'),
+        help='whether the cell pointer can overflow (default: true)',
     )
 
     parsed = parser.parse_args(args)
