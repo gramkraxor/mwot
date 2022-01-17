@@ -13,8 +13,8 @@ def decomp(bits, cols=8, vocab=default_vocab, no_bit='-', **_):
 
     Example output for bits 110011111 and cols=6:
 
-        110011  x x zz zz x x
-        111---  x x x
+        110011  n n mm mm n n
+        111---  n n n
     """
     for row in chunks(bits, cols):
         line_bits = ''.join(map(str, row)).ljust(cols, no_bit)

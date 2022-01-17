@@ -3,7 +3,7 @@
 from ..join import joinable
 
 default_width = 72
-default_vocab = ('zz', 'x')
+default_vocab = ('mm', 'n')
 
 
 @joinable(str)
