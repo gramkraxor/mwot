@@ -158,7 +158,8 @@ class Decompile(TranspilerAction):
 class InterpreterAction(Action):
 
     def run(self):
-        source_code = get_sources(self.args, self.stype_in)[0].read()
+        (code_source,) = get_sources(self.args, self.stype_in)
+        source_code = code_source.read()
         with get_input(self.args).open() as infile:
             self.kwargs['infile'] = infile
             self.execute(source_code)

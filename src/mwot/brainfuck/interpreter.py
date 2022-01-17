@@ -102,7 +102,7 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
     def read():
         char = infile.read(1)
         if char:
-            memory[pointer] = char[0]
+            (memory[pointer],) = char
         elif eof is not None:
             memory[pointer] = eof
 
