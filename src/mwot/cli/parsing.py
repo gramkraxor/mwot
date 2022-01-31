@@ -5,7 +5,7 @@ import argparse
 from .. import __version__
 from ..decompilers.common import default_vocab, default_width
 from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
-                       PosIntArg, VocabArg)
+                       OutfileArg, PosIntArg, VocabArg)
 
 description = """
 
@@ -130,6 +130,7 @@ def parse(args):
         '-o', '--output-file',
         dest='outfile',
         metavar='OUTFILE',
+        type=OutfileArg,
         default='-',
         help="output file pattern (absent or '-' for stdout)",
     )

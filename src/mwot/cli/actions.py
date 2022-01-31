@@ -2,7 +2,6 @@
 
 import os
 from pathlib import PurePath
-import re
 import stat
 import sys
 
@@ -10,12 +9,8 @@ from ..compiler import bits_from_mwot
 from .. import decompilers
 from .. import stypes
 from ..util import chunks, deshebang
-from .exceptions import OutfileFormatError
 from .parsing import Unspecified
 from .sources import Source, StringSource
-
-re_double_braces = re.compile(r'\{\{|\}\}')
-re_complex_specifier = re.compile(r'\{[^}]*[^\w}][^}]*\}')
 
 
 def chmod_x(f):
@@ -29,27 +24,6 @@ def chmod_x(f):
         os.umask(mask)
         mode = stat.S_IMODE(st_mode | (0o111 & ~mask))
         os.fchmod(fd, mode)
-
-
-def format_outfile(pattern, pathstr):
-    """Evaluate the -o pattern for a source file path."""
-    # Reject format specifiers more complex than '{xyz}', such as
-    # '{xyz + abc}' or '{xyz!r}'.
-    cleaned = re_double_braces.sub('', pattern)
-    if re_complex_specifier.search(cleaned):
-        raise OutfileFormatError(f'bad outfile pattern: {pattern!r}')
-
-    path = PurePath(pathstr)
-    try:
-        return pattern.format(
-            name=path.name,
-            stem=path.stem,
-            suffix=path.suffix,
-            path=path,
-            dir=path.parent,
-        )
-    except (IndexError, KeyError, ValueError) as err:
-        raise OutfileFormatError(f'bad outfile pattern: {pattern!r}') from err
 
 
 def get_input(parsed):
@@ -69,6 +43,18 @@ def get_sources(parsed, stype):
         string = stype.convert(parsed.source)
         return [StringSource(string)]
     return [Source(i, stype) for i in parsed.srcfiles]
+
+
+def outfile_subs(pathstr):
+    """Get the format substitutions for the outfile path."""
+    path = PurePath(pathstr)
+    return {
+        'name': path.name,
+        'stem': path.stem,
+        'suffix': path.suffix,
+        'path': path,
+        'dir': path.parent,
+    }
 
 
 def specced(parsed, keywords):
@@ -102,8 +88,8 @@ class TranspilerAction(Action):
                 with self.stype_out.buffer(sys.stdout) as f:
                     self.write(f, output)
             else:
-                outfile_path = format_outfile(self.args.outfile,
-                                              source.pathstr)
+                subs = outfile_subs(source.pathstr)
+                outfile_path = self.args.outfile.format(**subs)
                 mode = self.stype_out.iomode('w')
                 with open(outfile_path, mode) as f:
                     self.write(f, output)

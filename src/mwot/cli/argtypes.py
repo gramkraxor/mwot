@@ -1,11 +1,17 @@
 """Fancy argparse type conversion."""
 
+import re
+
 from ..compiler import bits_from_mwot
 from ..util import split
 
 truthies = {'true', 't', 'yes', 'y', '1'}
 falsies = {'false', 'f', 'no', 'n', '0'}
 decomps = {'basic', 'guide', 'rand'}
+
+re_double_braces = re.compile(r'\{\{|\}\}')
+re_complex_specifier = re.compile(r'\{[^}]*[^\w}][^}]*\}')
+outfile_sub_names = ('name', 'stem', 'suffix', 'path', 'dir')
 
 
 class ArgType:
@@ -79,6 +85,24 @@ def NoneArg(val):
     if val != 'none':
         raise ValueError('not none')
     return None
+
+
+@argtype('outfile pattern', casefold=False)
+def OutfileArg(val):
+    # Reject format specifiers more complex than '{xyz}', such as
+    # '{xyz:6}' or '{xyz!r}'.
+    cleaned = re_double_braces.sub('', val)
+    if re_complex_specifier.search(cleaned):
+        raise ValueError('complex format specifier')
+
+    # Test that formatting works.
+    subs = {n: '' for n in outfile_sub_names}
+    try:
+        val.format(**subs)
+    except (LookupError, ValueError) as err:
+        raise ValueError('nonexistent substitution') from err
+
+    return val
 
 
 @argtype('positive integer')
