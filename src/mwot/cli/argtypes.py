@@ -56,7 +56,7 @@ def ArgUnion(*argtypes):
                 pass
         raise ValueError('unknown type')
 
-    return ArgType(name, function)
+    return ArgType(name, function, casefold=False)
 
 
 @argtype('boolean')
