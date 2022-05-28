@@ -52,6 +52,7 @@ def parse(args):
 
     action_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
     format_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
+    src_mx_opts = main_opts.add_mutually_exclusive_group(required=False)
     action_mx_opts.add_argument(
         '-c', '--compile',
         dest='action',
@@ -94,13 +95,13 @@ def parse(args):
         const='binary',
         help='use bytes format',
     )
-    srcfile_opt = main_opts.add_argument(
+    src_mx_opts.add_argument(
         'srcfile',
         metavar='SRCFILE',
         nargs='?',
         help="source file (absent or '-' for stdin)",
     )
-    source_opt = main_opts.add_argument(
+    src_mx_opts.add_argument(
         '--source',
         dest='source',
         metavar='SOURCE',
@@ -227,10 +228,6 @@ def parse(args):
     parsed = parser.parse_args(args)
 
     # Manually add some restrictions and adjustments.
-    if parsed.source is not None and parsed.srcfile is not None:
-        srcfile = srcfile_opt.metavar
-        source = '/'.join(source_opt.option_strings)
-        parser.error(f'argument {source}: not allowed with argument {srcfile}')
     if parsed.srcfile is None:
         parsed.srcfile = '-'
     if parsed.action in ('interpret', 'execute'):
