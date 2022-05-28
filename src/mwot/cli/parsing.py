@@ -10,7 +10,7 @@ from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
 description = """
 
 Usage:
-  mwot -(c|d)(b|y) [SRCFILE...]
+  mwot -(c|d)(b|y) [SRCFILE]
   mwot -(i|x)b [SRCFILE]
 
 Transpile MWOT or execute brainfuck.
@@ -102,11 +102,11 @@ def parse(args):
         const='binary',
         help='use bytes format',
     )
-    srcfiles_opt = main_opts.add_argument(
-        'srcfiles',
+    srcfile_opt = main_opts.add_argument(
+        'srcfile',
         metavar='SRCFILE',
-        nargs='*',
-        help="source file(s) (absent or '-' for stdin)",
+        nargs='?',
+        help="source file (absent or '-' for stdin)",
     )
     source_opt = main_opts.add_argument(
         '--source',
@@ -236,21 +236,14 @@ def parse(args):
     parsed = parser.parse_args(args)
 
     # Manually add some restrictions and adjustments.
-    if parsed.source is not None and parsed.srcfiles:
-        srcfile = srcfiles_opt.metavar
+    if parsed.source is not None and parsed.srcfile is not None:
+        srcfile = srcfile_opt.metavar
         source = '/'.join(source_opt.option_strings)
         parser.error(f'argument {source}: not allowed with argument {srcfile}')
-    if not parsed.srcfiles:
-        parsed.srcfiles = ['-']
+    if parsed.srcfile is None:
+        parsed.srcfile = '-'
     if parsed.action in ('interpret', 'execute'):
         if parsed.format != 'brainfuck':
             parser.error(f'cannot execute {parsed.format}')
-        if len(parsed.srcfiles) > 1:
-            parser.error('cannot execute multiple source files')
-    else:
-        if parsed.outfile == '-' and len(parsed.srcfiles) > 1:
-            parser.error('cannot transpile multiple source files to stdout')
-    if parsed.srcfiles.count('-') > 1:
-        parser.error('cannot open stdin multiple times')
 
     return parser, parsed
