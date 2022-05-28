@@ -17,29 +17,26 @@ outfile_sub_names = ('name', 'stem', 'suffix', 'path', 'dir')
 class ArgType:
     """Argparse option type with a display name."""
 
-    def __init__(self, name, function, casefold=True):
+    def __init__(self, name, function):
         self.name = name
         self.function = function
-        self.casefold = casefold
 
     def __call__(self, val):
         """Convert a string to the correct type.
 
         Raises ValueError if that's not possible.
         """
-        if self.casefold:
-            val = val.casefold()
         return self.function(val)
 
     def __repr__(self):
         return self.name
 
 
-def argtype(name, casefold=True):
+def argtype(name):
     """Turn a function into an ArgType."""
 
     def decorator(fn):
-        return ArgType(name, fn, casefold=casefold)
+        return ArgType(name, fn)
 
     return decorator
 
@@ -56,11 +53,12 @@ def ArgUnion(*argtypes):
                 pass
         raise ValueError('unknown type')
 
-    return ArgType(name, function, casefold=False)
+    return ArgType(name, function)
 
 
 @argtype('boolean')
 def BooleanArg(val):
+    val = val.casefold()
     if val in truthies:
         return True
     if val in falsies:
@@ -70,6 +68,7 @@ def BooleanArg(val):
 
 @argtype('decompiler')
 def DecompilerArg(val):
+    val = val.casefold()
     if val in decomps:
         return val
     raise ValueError('unknown decompiler')
@@ -82,12 +81,13 @@ def IntArg(val):
 
 @argtype('none')
 def NoneArg(val):
+    val = val.casefold()
     if val != 'none':
         raise ValueError('not none')
     return None
 
 
-@argtype('outfile pattern', casefold=False)
+@argtype('outfile pattern')
 def OutfileArg(val):
     # Reject format specifiers more complex than '{xyz}', such as
     # '{xyz:6}' or '{xyz!r}'.
@@ -113,7 +113,7 @@ def PosIntArg(val):
     return num
 
 
-@argtype('vocab', casefold=False)
+@argtype('vocab')
 def VocabArg(val):
     desired = (0, 1)
     words = tuple(split(val))
