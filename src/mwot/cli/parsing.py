@@ -5,7 +5,7 @@ import argparse
 from .. import __version__
 from ..decompilers.common import default_vocab, default_width
 from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
-                       OutfileArg, PosIntArg, VocabArg)
+                       PosIntArg, VocabArg)
 
 description = """
 
@@ -23,14 +23,6 @@ Available decompilers (-D):
   basic      one word for 0, one word for 1
   guide      guide to help you write MWOT
   rand       random letters
-
-OUTFILE (-o) can include substitutions for some parts of SRCFILE:
-  {name}      basename
-  {stem}      basename without file suffix
-  {suffix}    file suffix
-  {path}      SRCFILE
-  {dir}       dirname
-Escape literal braces in OUTFILE as '{{' and '}}'.
 
 """
 
@@ -130,9 +122,8 @@ def parse(args):
         '-o', '--output-file',
         dest='outfile',
         metavar='OUTFILE',
-        type=OutfileArg,
         default='-',
-        help="output file pattern (absent or '-' for stdout)",
+        help="output file (absent or '-' for stdout)",
     )
     trans_opts.add_argument(
         '-S', '--shebang-out',

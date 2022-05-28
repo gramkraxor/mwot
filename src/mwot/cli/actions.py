@@ -1,7 +1,6 @@
 """CLI actions: compile, decompile, interpret, execute."""
 
 import os
-from pathlib import PurePath
 import stat
 import sys
 
@@ -45,18 +44,6 @@ def get_source(parsed, stype):
     return Source(parsed.srcfile, stype)
 
 
-def outfile_subs(pathstr):
-    """Get the format substitutions for the outfile path."""
-    path = PurePath(pathstr)
-    return {
-        'name': path.name,
-        'stem': path.stem,
-        'suffix': path.suffix,
-        'path': path,
-        'dir': path.parent,
-    }
-
-
 def specced(parsed, keywords):
     """Get a dictionary of non-`Unspecified` attributes from `parsed`."""
     d = {}
@@ -88,10 +75,8 @@ class TranspilerAction(Action):
             with self.stype_out.buffer(sys.stdout) as f:
                 self.write(f, output)
         else:
-            subs = outfile_subs(source.pathstr)
-            outfile_path = self.args.outfile.format(**subs)
             mode = self.stype_out.iomode('w')
-            with open(outfile_path, mode) as f:
+            with open(self.args.outfile, mode) as f:
                 self.write(f, output)
 
     def write(self, f, output):
