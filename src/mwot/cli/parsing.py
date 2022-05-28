@@ -5,12 +5,12 @@ import argparse
 from .. import __version__
 from ..decompilers.common import default_vocab, default_width
 from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
-                       OutfileArg, PosIntArg, VocabArg)
+                       PosIntArg, VocabArg)
 
 description = """
 
 Usage:
-  mwot -(c|d)(b|y) [SRCFILE...]
+  mwot -(c|d)(b|y) [SRCFILE]
   mwot -(i|x)b [SRCFILE]
 
 Transpile MWOT or execute brainfuck.
@@ -23,14 +23,6 @@ Available decompilers (-D):
   basic      one word for 0, one word for 1
   guide      guide to help you write MWOT
   rand       random letters
-
-OUTFILE (-o) can include substitutions for some parts of SRCFILE:
-  {name}      basename
-  {stem}      basename without file suffix
-  {suffix}    file suffix
-  {path}      SRCFILE
-  {dir}       dirname
-Escape literal braces in OUTFILE as '{{' and '}}'.
 
 """
 
@@ -60,6 +52,7 @@ def parse(args):
 
     action_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
     format_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
+    src_mx_opts = main_opts.add_mutually_exclusive_group(required=False)
     action_mx_opts.add_argument(
         '-c', '--compile',
         dest='action',
@@ -102,13 +95,13 @@ def parse(args):
         const='binary',
         help='use bytes format',
     )
-    srcfiles_opt = main_opts.add_argument(
-        'srcfiles',
+    src_mx_opts.add_argument(
+        'srcfile',
         metavar='SRCFILE',
-        nargs='*',
-        help="source file(s) (absent or '-' for stdin)",
+        nargs='?',
+        help="source file (absent or '-' for stdin)",
     )
-    source_opt = main_opts.add_argument(
+    src_mx_opts.add_argument(
         '--source',
         dest='source',
         metavar='SOURCE',
@@ -130,9 +123,8 @@ def parse(args):
         '-o', '--output-file',
         dest='outfile',
         metavar='OUTFILE',
-        type=OutfileArg,
         default='-',
-        help="output file pattern (absent or '-' for stdout)",
+        help="output file (absent or '-' for stdout)",
     )
     trans_opts.add_argument(
         '-S', '--shebang-out',
@@ -236,21 +228,10 @@ def parse(args):
     parsed = parser.parse_args(args)
 
     # Manually add some restrictions and adjustments.
-    if parsed.source is not None and parsed.srcfiles:
-        srcfile = srcfiles_opt.metavar
-        source = '/'.join(source_opt.option_strings)
-        parser.error(f'argument {source}: not allowed with argument {srcfile}')
-    if not parsed.srcfiles:
-        parsed.srcfiles = ['-']
+    if parsed.srcfile is None:
+        parsed.srcfile = '-'
     if parsed.action in ('interpret', 'execute'):
         if parsed.format != 'brainfuck':
             parser.error(f'cannot execute {parsed.format}')
-        if len(parsed.srcfiles) > 1:
-            parser.error('cannot execute multiple source files')
-    else:
-        if parsed.outfile == '-' and len(parsed.srcfiles) > 1:
-            parser.error('cannot transpile multiple source files to stdout')
-    if parsed.srcfiles.count('-') > 1:
-        parser.error('cannot open stdin multiple times')
 
     return parser, parsed

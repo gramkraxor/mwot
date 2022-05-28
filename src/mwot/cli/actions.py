@@ -1,7 +1,6 @@
 """CLI actions: compile, decompile, interpret, execute."""
 
 import os
-from pathlib import PurePath
 import stat
 import sys
 
@@ -32,29 +31,17 @@ def get_input(parsed):
         return StringSource(parsed.input.encode())
     if parsed.infile != '-':
         return Source(parsed.infile, stypes.Bytes)
-    if parsed.source is None and '-' in parsed.srcfiles:
+    if parsed.source is None and parsed.srcfile == '-':
         return StringSource('')
     return Source('-', stypes.Bytes)
 
 
-def get_sources(parsed, stype):
-    """Retrieve the correct code source(s) from `parsed`."""
+def get_source(parsed, stype):
+    """Retrieve the correct code source from `parsed`."""
     if parsed.source is not None:
         string = stype.convert(parsed.source)
-        return [StringSource(string)]
-    return [Source(i, stype) for i in parsed.srcfiles]
-
-
-def outfile_subs(pathstr):
-    """Get the format substitutions for the outfile path."""
-    path = PurePath(pathstr)
-    return {
-        'name': path.name,
-        'stem': path.stem,
-        'suffix': path.suffix,
-        'path': path,
-        'dir': path.parent,
-    }
+        return StringSource(string)
+    return Source(parsed.srcfile, stype)
 
 
 def specced(parsed, keywords):
@@ -82,17 +69,15 @@ class Action:
 class TranspilerAction(Action):
 
     def run(self):
-        for source in get_sources(self.args, self.stype_in):
-            output = self.transpile(source.read())
-            if self.args.outfile == '-':
-                with self.stype_out.buffer(sys.stdout) as f:
-                    self.write(f, output)
-            else:
-                subs = outfile_subs(source.pathstr)
-                outfile_path = self.args.outfile.format(**subs)
-                mode = self.stype_out.iomode('w')
-                with open(outfile_path, mode) as f:
-                    self.write(f, output)
+        source = get_source(self.args, self.stype_in)
+        output = self.transpile(source.read())
+        if self.args.outfile == '-':
+            with self.stype_out.buffer(sys.stdout) as f:
+                self.write(f, output)
+        else:
+            mode = self.stype_out.iomode('w')
+            with open(self.args.outfile, mode) as f:
+                self.write(f, output)
 
     def write(self, f, output):
         if self.args.shebang_out and self.args.format == 'brainfuck':
@@ -144,7 +129,7 @@ class Decompile(TranspilerAction):
 class InterpreterAction(Action):
 
     def run(self):
-        (code_source,) = get_sources(self.args, self.stype_in)
+        code_source = get_source(self.args, self.stype_in)
         source_code = code_source.read()
         with get_input(self.args).open() as infile:
             self.kwargs['infile'] = infile
