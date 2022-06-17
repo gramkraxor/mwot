@@ -132,11 +132,10 @@ class InterpreterAction(Action):
 
     def run(self):
         source_code = self.get_source().read()
-        with self.get_input().open() as infile:
-            with self.open_outfile() as outfile:
-                self.kwargs['infile'] = infile
-                self.kwargs['outfile'] = outfile
-                self.execute(source_code)
+        with self.get_input().open() as infile, self.open_outfile() as outfile:
+            self.kwargs['infile'] = infile
+            self.kwargs['outfile'] = outfile
+            self.execute(source_code)
 
 
 class Interpret(InterpreterAction):
