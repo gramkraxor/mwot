@@ -25,25 +25,6 @@ def chmod_x(f):
         os.fchmod(fd, mode)
 
 
-def get_input(parsed):
-    """Retrieve the correct interpreter input source from `parsed`."""
-    if parsed.input is not None:
-        return StringSource(parsed.input.encode())
-    if parsed.infile != '-':
-        return Source(parsed.infile, stypes.Bytes)
-    if parsed.source is None and parsed.srcfile == '-':
-        return StringSource('')
-    return Source('-', stypes.Bytes)
-
-
-def get_source(parsed, stype):
-    """Retrieve the correct code source from `parsed`."""
-    if parsed.source is not None:
-        string = stype.convert(parsed.source)
-        return StringSource(string)
-    return Source(parsed.srcfile, stype)
-
-
 def specced(parsed, keywords):
     """Get a dictionary of non-`Unspecified` attributes from `parsed`."""
     d = {}
@@ -65,8 +46,15 @@ class Action:
         self.kwargs = specced(parsed, self.keywords)
         self.run()
 
+    def get_source(self):
+        """Retrieve the correct code source."""
+        if self.args.source is not None:
+            string = self.stype_in.convert(self.args.source)
+            return StringSource(string)
+        return Source(self.args.srcfile, self.stype_in)
+
     def open_outfile(self):
-        """Open the correct output file from `parsed`."""
+        """Open the correct output file."""
         if self.args.outfile == '-':
             return self.stype_out.buffer(sys.stdout)
         mode = self.stype_out.iomode('w')
@@ -76,7 +64,7 @@ class Action:
 class TranspilerAction(Action):
 
     def run(self):
-        source = get_source(self.args, self.stype_in)
+        source = self.get_source()
         output = self.transpile(source.read())
         with self.open_outfile() as f:
             self.write(f, output)
@@ -132,10 +120,19 @@ class InterpreterAction(Action):
 
     stype_out = stypes.Bytes
 
+    def get_input(self):
+        """Retrieve the correct interpreter input source."""
+        if self.args.input is not None:
+            return StringSource(self.args.input.encode())
+        if self.args.infile != '-':
+            return Source(self.args.infile, stypes.Bytes)
+        if self.args.source is None and self.args.srcfile == '-':
+            return StringSource(b'')
+        return Source('-', stypes.Bytes)
+
     def run(self):
-        code_source = get_source(self.args, self.stype_in)
-        source_code = code_source.read()
-        with get_input(self.args).open() as infile:
+        source_code = self.get_source().read()
+        with self.get_input().open() as infile:
             with self.open_outfile() as outfile:
                 self.kwargs['infile'] = infile
                 self.kwargs['outfile'] = outfile
