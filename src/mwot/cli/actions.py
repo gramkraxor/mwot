@@ -65,19 +65,21 @@ class Action:
         self.kwargs = specced(parsed, self.keywords)
         self.run()
 
+    def open_outfile(self):
+        """Open the correct output file from `parsed`."""
+        if self.args.outfile == '-':
+            return self.stype_out.buffer(sys.stdout)
+        mode = self.stype_out.iomode('w')
+        return open(self.args.outfile, mode)
+
 
 class TranspilerAction(Action):
 
     def run(self):
         source = get_source(self.args, self.stype_in)
         output = self.transpile(source.read())
-        if self.args.outfile == '-':
-            with self.stype_out.buffer(sys.stdout) as f:
-                self.write(f, output)
-        else:
-            mode = self.stype_out.iomode('w')
-            with open(self.args.outfile, mode) as f:
-                self.write(f, output)
+        with self.open_outfile() as f:
+            self.write(f, output)
 
     def write(self, f, output):
         if self.args.shebang_out and self.args.format == 'brainfuck':
@@ -128,12 +130,16 @@ class Decompile(TranspilerAction):
 
 class InterpreterAction(Action):
 
+    stype_out = stypes.Bytes
+
     def run(self):
         code_source = get_source(self.args, self.stype_in)
         source_code = code_source.read()
         with get_input(self.args).open() as infile:
-            self.kwargs['infile'] = infile
-            self.execute(source_code)
+            with self.open_outfile() as outfile:
+                self.kwargs['infile'] = infile
+                self.kwargs['outfile'] = outfile
+                self.execute(source_code)
 
 
 class Interpret(InterpreterAction):
