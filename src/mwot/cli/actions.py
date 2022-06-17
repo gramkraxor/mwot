@@ -25,14 +25,14 @@ def chmod_x(f):
         os.fchmod(fd, mode)
 
 
-def specced(parsed, keywords):
-    """Get a dictionary of non-`Unspecified` attributes from `parsed`."""
-    d = {}
-    for k in keywords:
-        v = getattr(parsed, k)
-        if v is not Unspecified:
-            d[k] = v
-    return d
+def specced(namespace, keywords):
+    """Get a dictionary of non-`Unspecified` attributes."""
+    specified = {}
+    for keyword in keywords:
+        value = getattr(namespace, keyword)
+        if value is not Unspecified:
+            specified[keyword] = value
+    return specified
 
 
 class Action:
