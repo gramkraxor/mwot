@@ -82,18 +82,18 @@ def parse(args):
         help='(with -b) execute brainfuck',
     )
     format_mx_opts.add_argument(
-        '-b', '--brainfuck', '--bf',
+        '-b', '--brainfuck',
         dest='format',
         action='store_const',
         const='brainfuck',
         help='use brainfuck format',
     )
     format_mx_opts.add_argument(
-        '-y', '--bytes', '--binary',
+        '-y', '--binary',
         dest='format',
         action='store_const',
         const='binary',
-        help='use bytes format',
+        help='use binary (octets) format',
     )
     src_mx_opts.add_argument(
         'srcfile',
@@ -170,17 +170,11 @@ def parse(args):
     )
 
     bf_src_opts.add_argument(
-        '--shebang-in',
-        action='store_true',
-        help='skip over any shebang in source (default)',
-    )
-    bf_src_opts.add_argument(
         '--no-shebang-in',
         dest='shebang_in',
         action='store_false',
-        help='treat any shebang in source as literal brainfuck',
+        help='treat a shebang as literal brainfuck',
     )
-    parser.set_defaults(shebang_in=True)
 
     input_mx_opts = i_bf_opts.add_mutually_exclusive_group()
     input_mx_opts.add_argument(
