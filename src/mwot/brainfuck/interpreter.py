@@ -96,8 +96,7 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
         byte = memory[pointer] % 256
         bytestr = bytes((byte,))
         outfile.write(bytestr)
-        if outfile.isatty():
-            outfile.flush()
+        outfile.flush()
 
     def read():
         char = infile.read(1)
