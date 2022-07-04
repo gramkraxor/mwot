@@ -1,6 +1,7 @@
 """The `argparse`-based portion of the CLI."""
 
 import argparse
+import sys
 
 from .. import __version__
 from ..decompilers.common import default_vocab, default_width
@@ -218,6 +219,10 @@ def parse(args):
         default=Unspecified,
         help='whether the cell pointer can overflow (default: true)',
     )
+
+    if not args:
+        parser.print_help()
+        sys.exit(1)
 
     parsed = parser.parse_args(args)
 
