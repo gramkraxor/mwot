@@ -11,8 +11,8 @@ from .argtypes import (ArgUnion, BooleanArg, DecompilerArg, IntArg, NoneArg,
 description = """
 
 Usage:
-  mwot -(c|d)(b|y) [SRCFILE]
-  mwot -(i|x)b [SRCFILE]
+  mwot -{c|d}{b|y} [OPTIONS] [SRCFILE]
+  mwot -{i|x}b [OPTIONS] [SRCFILE]
 
 Transpile MWOT or execute brainfuck.
 
