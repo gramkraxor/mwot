@@ -43,13 +43,13 @@ def parse(args):
     main_opts = parser.add_argument_group(
         'Main options')
     trans_opts = parser.add_argument_group(
-        'Transpilation (-[cd]) options')
+        'Transpilation (-{c|d}) options')
     decomp_opts = parser.add_argument_group(
         'Decompilation (-d) options')
     bf_src_opts = parser.add_argument_group(
-        'Brainfuck source (-[dx]b) options')
+        'Brainfuck source (-{d|x}b) options')
     i_bf_opts = parser.add_argument_group(
-        'Brainfuck interpreter (-[ix]b) options')
+        'Brainfuck interpreter (-{i|x}b) options')
 
     action_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
     format_mx_opts = main_opts.add_mutually_exclusive_group(required=True)
