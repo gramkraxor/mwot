@@ -9,10 +9,8 @@ from .actions import Compile, Decompile, Interpret, Execute
 from .parsing import parse
 
 
-def main(args=None, prefix_args=()):
-    if args is None:
-        args = sys.argv[1:]
-    args = [*prefix_args, *args]
+def main(args=None):
+    args = sys.argv[1:] if args is None else list(args)
 
     _, parsed = parse(args)
 
