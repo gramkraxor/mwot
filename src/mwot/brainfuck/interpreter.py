@@ -4,7 +4,6 @@ from collections import defaultdict
 import sys
 
 from ..compiler import bits_from_mwot
-from ..exceptions import InterpreterError
 from .. import stypes
 from ..util import deshebang
 from . import cmds, from_bits as bf_from_bits
@@ -21,10 +20,10 @@ def get_jumps(brainfuck):
             try:
                 target = stack.pop()
             except IndexError:
-                raise InterpreterError("unmatched ']'") from None
+                raise ValueError("unmatched ']'") from None
             jumps[pc], jumps[target] = target, pc
     if stack:
-        raise InterpreterError("unmatched '['")
+        raise ValueError("unmatched '['")
     return jumps
 
 
@@ -74,7 +73,7 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
             if totalcells:
                 pointer %= totalcells
         elif pointer < 0 or (totalcells and totalcells <= pointer):
-            raise InterpreterError(f'pointer out of range: {pointer}')
+            raise RuntimeError(f'pointer out of range: {pointer}')
 
     def increment(by):
         memory[pointer] += by

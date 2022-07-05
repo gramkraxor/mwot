@@ -1,9 +1,6 @@
 """MWOT: an esolang."""
 
 __all__ = [
-    'CompilerError',
-    'InterpreterError',
-    'MWOTError',
     'bf_from_bits',
     'bf_from_mwot',
     'binary',
@@ -27,7 +24,6 @@ from . import brainfuck
 from . import cli
 from . import decompilers
 from .compiler import bits_from_mwot
-from .exceptions import CompilerError, InterpreterError, MWOTError
 from .join import joinable
 
 bf_from_bits = brainfuck.from_bits
