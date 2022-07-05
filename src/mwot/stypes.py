@@ -1,15 +1,15 @@
 """Analagous functions of `str` and `bytes`.
 
-`mwot` recognizes up to four different string-like types:
-    1. `str`
-    2. `bytes`
-    3. Iterables of single-character `str`s
-    4. Iterables of `int`s in `range(256)`
+Up to four different string-like types are recognized:
+    1. Unicode strings
+    2. Byte strings
+    3. Unicode iterables
+    4. Byte iterables
 The types are identified in the following ways, respectively:
     1. Instance of `str`
-    2. Instance of `bytes`
-    3. First item yielded is a `str`
-    4. First item yielded is an `int`
+    2. Instance of `bytes` or `bytearray`
+    3. First item yielded is a single-character `str`
+    4. First item yielded is an `int` in `range(256)`
 """
 
 import io
@@ -19,7 +19,7 @@ import itertools
 def ask(s):
     """Ask a string for its type."""
     for t in (Str, Bytes):
-        if isinstance(s, t.type):
+        if t.ask(s):
             return t
     return None
 
@@ -27,7 +27,7 @@ def ask(s):
 def ask_char(char):
     """Ask a single character for its corresponding string type."""
     for t in (Str, Bytes):
-        if isinstance(char, t.chartype):
+        if t.ask_char(char):
             return t
     return None
 
@@ -66,6 +66,16 @@ class SType:
     """A bundle of analagous functions for `str` and `bytes`."""
 
     @classmethod
+    def ask(cls, s):
+        """Ask a string if it is this type."""
+        return cls._ask(s)
+
+    @classmethod
+    def ask_char(cls, c):
+        """Ask a character if it corresponds to this type."""
+        return cls._ask_char(c)
+
+    @classmethod
     def buffer(cls, textio):
         """Return `textio` or its buffer."""
         return cls._buffer(textio)
@@ -92,23 +102,27 @@ class SType:
 
 
 class Str(SType):
+    """Unicode strings."""
+
+    _ask = lambda s: isinstance(s, str)
+    _ask_char = lambda c: isinstance(c, str) and len(c) == 1
     _buffer = lambda textio: textio
     _convert = decode
     _iomode = 't'
     _join = ''.join
     _ord = lambda c: chr(ord(c))
-    type = str
-    chartype = str
 
 
 class Bytes(SType):
+    """Byte strings."""
+
+    _ask = lambda s: isinstance(s, (bytes, bytearray))
+    _ask_char = lambda c: isinstance(c, int) and c in range(256)
     _buffer = lambda textio: textio.buffer
     _convert = encode
     _iomode = 'b'
     _join = bytes
     _ord = ord
-    type = bytes
-    chartype = int
 
 
 def probe(s, default=Str):
