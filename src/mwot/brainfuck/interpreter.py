@@ -5,22 +5,9 @@ import sys
 
 from ..compiler import bits_from_mwot
 from ..exceptions import InterpreterError
-from ..join import joinable
+from .. import stypes
 from ..util import deshebang
 from . import cmds, from_bits as bf_from_bits
-
-# Map bytes and str cmds to str cmds
-cmds_str = cmds.decode('ascii')
-decoder = {k: v for i in (cmds, cmds_str) for k, v in zip(i, cmds_str)}
-
-
-@joinable(str)
-def clean_bf(s):
-    """Remove non-brainfuck characters and convert to `str` string-like."""
-    for char in s:
-        cmd = decoder.get(char)
-        if cmd is not None:
-            yield cmd
 
 
 def get_jumps(brainfuck):
@@ -72,9 +59,12 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
     pc = 0
     pointer = 0
 
+    stype, brainfuck = stypes.probe(brainfuck, default=stypes.Bytes)
+    if stype is not stypes.Bytes:
+        raise TypeError('brainfuck must be bytes')
     if shebang_in:
-        brainfuck = deshebang(brainfuck)
-    brainfuck = clean_bf(brainfuck).join()
+        brainfuck = deshebang(brainfuck, stype)
+    brainfuck = tuple(chr(c) for c in brainfuck if c in cmds)
     jumps = get_jumps(brainfuck)
 
     def shift(by):

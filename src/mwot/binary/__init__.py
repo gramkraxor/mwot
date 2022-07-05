@@ -19,7 +19,7 @@ def to_bits(chars):
     """Convert bytes to MWOT bits."""
     stype, chars = stypes.probe(chars, default=stypes.Bytes)
     if stype is not stypes.Bytes:
-        raise TypeError('chars must yield bytes')
+        raise TypeError('chars must be bytes')
     for byte in chars:
         for i in bitrange:
             yield (byte >> i) & 1

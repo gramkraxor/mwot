@@ -27,9 +27,12 @@ def chunk_bits(bits, chunk_size):
         yield chunk
 
 
-def deshebang(s):
+def deshebang(s, stype=None):
     """Remove a leading shebang line."""
-    stype, s = stypes.probe(s)
+    if stype is None:
+        stype, s = stypes.probe(s)
+    else:
+        s = iter(s)
     shebang = stype.convert('#!')
     newline = stype.ord('\n')
     leading = stype.join(itertools.islice(s, len(shebang)))

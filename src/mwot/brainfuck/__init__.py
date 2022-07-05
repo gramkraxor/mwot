@@ -37,7 +37,7 @@ def to_bits(chars):
     """Convert brainfuck to MWOT bits."""
     stype, chars = stypes.probe(chars, default=stypes.Bytes)
     if stype is not stypes.Bytes:
-        raise TypeError('chars must yield bytes')
+        raise TypeError('chars must be bytes')
     for cmd in chars:
         yield from chunkmap.get(cmd, ())
 

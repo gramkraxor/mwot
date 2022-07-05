@@ -107,7 +107,7 @@ class Decompile(TranspilerAction):
     def transpile(self, source_code):
         decomp = getattr(decompilers, self.args.decompiler).decomp
         if self.args.shebang_in and self.args.format == 'brainfuck':
-            source_code = deshebang(source_code)
+            source_code = deshebang(source_code, self.stype_in)
         return decomp(self.format.to_bits(source_code), **self.kwargs)
 
     def write(self, f, output):

@@ -1,6 +1,7 @@
 """Turn MWOT into bits."""
 
 from .join import joinable
+from . import stypes
 from .util import deshebang, split
 
 
@@ -8,10 +9,13 @@ from .util import deshebang, split
 def bits_from_mwot(mwot):
     """Yield MWOT bits from MWOT source.
 
-    Yields the even/oddness of the letter count of each whitespace-
-    separated word, ignoring words with 0 letters.
+    Yields the even/oddness of the letter count of each
+    whitespace-separated word, ignoring words with 0 letters.
     """
-    for word in split(deshebang(mwot)):
+    stype, mwot = stypes.probe(mwot, default=stypes.Str)
+    if stype is not stypes.Str:
+        raise TypeError('mwot must be unicode')
+    for word in split(deshebang(mwot, stype)):
         length = letter_count(word)
         if length:
             yield length & 1
