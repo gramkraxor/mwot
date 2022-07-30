@@ -47,7 +47,7 @@ def deshebang(s, stype=None):
 
 
 def split(s):
-    """Split a `str` string-like on whitespace."""
+    """Split a text string-like on whitespace."""
     s = iter(s)
 
     def nextword():

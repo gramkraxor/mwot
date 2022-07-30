@@ -82,7 +82,7 @@ class TranspilerAction(Action):
 
 class Compile(TranspilerAction):
 
-    stype_in = stypes.Str
+    stype_in = stypes.Text
     stype_out = stypes.Bytes
     bf_shebang = b'#!/usr/bin/env -S mwot -xb\n'
 
@@ -100,7 +100,7 @@ class Compile(TranspilerAction):
 class Decompile(TranspilerAction):
 
     stype_in = stypes.Bytes
-    stype_out = stypes.Str
+    stype_out = stypes.Text
     bf_shebang = '#!/usr/bin/env -S mwot -ib\n'
     keywords = ('width', 'vocab', 'cols')
 
@@ -140,7 +140,7 @@ class InterpreterAction(Action):
 
 class Interpret(InterpreterAction):
 
-    stype_in = stypes.Str
+    stype_in = stypes.Text
     keywords = ('cellsize', 'eof', 'totalcells', 'wraparound')
 
     def execute(self, source_code):

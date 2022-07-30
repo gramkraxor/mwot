@@ -1,9 +1,9 @@
-"""Analagous functions of `str` and `bytes`.
+"""Analagous functions of text and byte strings.
 
 Up to four different string-like types are recognized:
-    1. Unicode strings
+    1. Text strings
     2. Byte strings
-    3. Unicode iterables
+    3. Text iterables
     4. Byte iterables
 The types are identified in the following ways, respectively:
     1. Instance of `str`
@@ -18,7 +18,7 @@ import itertools
 
 def ask(s):
     """Ask a string for its type."""
-    for t in (Str, Bytes):
+    for t in (Text, Bytes):
         if t.ask(s):
             return t
     return None
@@ -26,16 +26,16 @@ def ask(s):
 
 def ask_char(char):
     """Ask a single character for its corresponding string type."""
-    for t in (Str, Bytes):
+    for t in (Text, Bytes):
         if t.ask_char(char):
             return t
     return None
 
 
 def decode(s):
-    """Convert a string to `str`."""
+    """Convert a string to text."""
     stype = ask(s)
-    if stype is Str:
+    if stype is Text:
         return s
     if stype is Bytes:
         return s.decode()
@@ -43,9 +43,9 @@ def decode(s):
 
 
 def encode(s):
-    """Convert a string to `bytes`."""
+    """Convert a string to bytes."""
     stype = ask(s)
-    if stype is Str:
+    if stype is Text:
         return s.encode()
     if stype is Bytes:
         return s
@@ -53,9 +53,9 @@ def encode(s):
 
 
 def StringIO(s):
-    """Create a `StringIO` or `BytesIO` from a string."""
+    """Create an I/O object from a string."""
     stype = ask(s)
-    if stype is Str:
+    if stype is Text:
         return io.StringIO(s)
     if stype is Bytes:
         return io.BytesIO(s)
@@ -63,7 +63,7 @@ def StringIO(s):
 
 
 class SType:
-    """A bundle of analagous functions for `str` and `bytes`."""
+    """A bundle of analagous functions for text and byte strings."""
 
     @classmethod
     def ask(cls, s):
@@ -97,11 +97,11 @@ class SType:
 
     @classmethod
     def ord(cls, c):
-        """Convert a single `str` character to this type."""
+        """Convert a single text character to this type."""
         return cls._ord(c)
 
 
-class Str(SType):
+class Text(SType):
     """Unicode strings."""
 
     _ask = lambda s: isinstance(s, str)
@@ -125,7 +125,7 @@ class Bytes(SType):
     _ord = ord
 
 
-def probe(s, default=Str):
+def probe(s, default=Text):
     """Probe a string-like for its type with `next(iter(s))`.
 
     Returns (`stype`, `s2`). The returned `s2` should replace `s`, since
@@ -140,5 +140,5 @@ def probe(s, default=Str):
         return default, itertools.chain(())
     stype = ask_char(first)
     if stype is None:
-        raise TypeError('iterable yields neither bytes nor str characters')
+        raise TypeError('iterable yields neither bytes nor text characters')
     return stype, itertools.chain((first,), s)

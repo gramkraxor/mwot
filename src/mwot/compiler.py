@@ -12,9 +12,9 @@ def bits_from_mwot(mwot):
     Yields the even/oddness of the letter count of each
     whitespace-separated word, ignoring words with 0 letters.
     """
-    stype, mwot = stypes.probe(mwot, default=stypes.Str)
-    if stype is not stypes.Str:
-        raise TypeError('mwot must be unicode')
+    stype, mwot = stypes.probe(mwot, default=stypes.Text)
+    if stype is not stypes.Text:
+        raise TypeError('mwot must be text')
     for word in split(deshebang(mwot, stype)):
         length = letter_count(word)
         if length:
