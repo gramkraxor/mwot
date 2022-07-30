@@ -9,11 +9,11 @@ from ..util import deshebang
 from . import cmds, from_bits as bf_from_bits
 
 
-def get_jumps(brainfuck):
+def get_jumps(instructions):
     """Match brackets and map their positions to each other."""
     stack = []
     jumps = {}
-    for pc, cmd in enumerate(brainfuck):
+    for pc, cmd in enumerate(instructions):
         if cmd == '[':
             stack.append(pc)
         elif cmd == ']':
@@ -63,8 +63,8 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
         raise TypeError('brainfuck must be bytes')
     if shebang_in:
         brainfuck = deshebang(brainfuck, stype)
-    brainfuck = tuple(chr(c) for c in brainfuck if c in cmds)
-    jumps = get_jumps(brainfuck)
+    instructions = tuple(chr(c) for c in brainfuck if c in cmds)
+    jumps = get_jumps(instructions)
 
     def shift(by):
         nonlocal pointer
@@ -110,8 +110,8 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
         ']': lambda: jump(True),
     }
 
-    while pc < len(brainfuck):
-        instruction_map[brainfuck[pc]]()
+    while pc < len(instructions):
+        instruction_map[instructions[pc]]()
         pc += 1
 
 
