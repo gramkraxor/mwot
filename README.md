@@ -91,11 +91,14 @@ mwot -dy goodbye.txt -o goodbye.txt.mwot
 mwot -xb hello.b
 
 # Compile `hello.mwot` to an executable brainfuck script
-mwot -cbSX hello.mwot -o hello.b
+mwot -cbSX hello.mwot -o hello
 
 # Generate a very literal `hello.mwot`, using standard I/O
 mwot -db -D basic --vocab 'zero one' < hello.b > hello-literal.mwot
 
 # Execute brainfuck with strict settings and no input
 mwot -xb --eof=-1 --wraparound false --no-shebang-in --input '' hello.b
+
+# Execute brainfuck MWOT without compiling to a file
+mwot -ib hello.mwot
 ```
