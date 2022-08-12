@@ -31,4 +31,3 @@ def main(args=None):
         action(parsed, format_module)
     except (KeyboardInterrupt, BrokenPipeError):
         pass
-    sys.exit(0)
