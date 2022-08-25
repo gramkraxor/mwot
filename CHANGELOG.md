@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.1.0] - 2022-08-25
+
+- Implemented fully-featured CLI
+- Stopped implicit text/bytes conversions
+- Removed custom exception classes
+- Changed default words for zero and one to "mm" and "n"
+- Switched to `setup.cfg`-based project metadata
+
+
 ## [0.0.1] - 2021-05-06
 
 - Added three decompilers: `basic`, `guide`, and `rand`
