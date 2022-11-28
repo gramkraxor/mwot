@@ -38,6 +38,7 @@ def parse(args):
         epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=False,
+        allow_abbrev=False,
     )
 
     main_opts = parser.add_argument_group(
