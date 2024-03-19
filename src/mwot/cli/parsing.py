@@ -104,7 +104,7 @@ def parse(args):
         help="source file (absent or '-' for stdin)",
     )
     src_mx_opts.add_argument(
-        '--source',
+        '-e', '--source',
         dest='source',
         metavar='SOURCE',
         help="take source code as an argument; don't accept SRCFILE",
