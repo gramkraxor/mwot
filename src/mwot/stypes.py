@@ -65,64 +65,73 @@ def StringIO(s):
 class SType:
     """A bundle of analagous functions for text and byte strings."""
 
-    @classmethod
-    def ask(cls, s):
+    def __init__(
+        self,
+        ask_fn,
+        ask_char_fn,
+        buffer_fn,
+        convert_fn,
+        iomode,
+        join_fn,
+        ord_fn,
+    ):
+        self._ask = ask_fn
+        self._ask_char = ask_char_fn
+        self._buffer = buffer_fn
+        self._convert = convert_fn
+        self._iomode = iomode
+        self._join = join_fn
+        self._ord = ord_fn
+
+    def ask(self, s):
         """Ask a string if it is this type."""
-        return cls._ask(s)
+        return self._ask(s)
 
-    @classmethod
-    def ask_char(cls, c):
+    def ask_char(self, c):
         """Ask a character if it corresponds to this type."""
-        return cls._ask_char(c)
+        return self._ask_char(c)
 
-    @classmethod
-    def buffer(cls, textio):
+    def buffer(self, textio):
         """Return `textio` or its buffer."""
-        return cls._buffer(textio)
+        return self._buffer(textio)
 
-    @classmethod
-    def convert(cls, s):
+    def convert(self, s):
         """Convert a string to this type."""
-        return cls._convert(s)
+        return self._convert(s)
 
-    @classmethod
-    def iomode(cls, mode):
+    def iomode(self, mode):
         """Add a 't' or 'b' to the end of `mode`."""
-        return f'{mode}{cls._iomode}'
+        return f'{mode}{self._iomode}'
 
-    @classmethod
-    def join(cls, s):
+    def join(self, s):
         """Join an iterable of characters."""
-        return cls._join(s)
+        return self._join(s)
 
-    @classmethod
-    def ord(cls, c):
+    def ord(self, c):
         """Convert a single text character to this type."""
-        return cls._ord(c)
+        return self._ord(c)
 
 
-class Text(SType):
-    """Unicode strings."""
-
-    _ask = lambda s: isinstance(s, str)
-    _ask_char = lambda c: isinstance(c, str) and len(c) == 1
-    _buffer = lambda textio: textio
-    _convert = decode
-    _iomode = 't'
-    _join = ''.join
-    _ord = lambda c: chr(ord(c))
-
-
-class Bytes(SType):
-    """Byte strings."""
-
-    _ask = lambda s: isinstance(s, (bytes, bytearray))
-    _ask_char = lambda c: isinstance(c, int) and c in range(256)
-    _buffer = lambda textio: textio.buffer
-    _convert = encode
-    _iomode = 'b'
-    _join = bytes
-    _ord = ord
+# Unicode strings
+Text = SType(
+    ask_fn=lambda s: isinstance(s, str),
+    ask_char_fn=lambda c: isinstance(c, str) and len(c) == 1,
+    buffer_fn=lambda textio: textio,
+    convert_fn=decode,
+    iomode='t',
+    join_fn=''.join,
+    ord_fn=lambda c: chr(ord(c)),
+)
+# Byte strings
+Bytes = SType(
+    ask_fn=lambda s: isinstance(s, (bytes, bytearray)),
+    ask_char_fn=lambda c: isinstance(c, int) and c in range(256),
+    buffer_fn=lambda textio: textio.buffer,
+    convert_fn=encode,
+    iomode='b',
+    join_fn=bytes,
+    ord_fn=ord,
+)
 
 
 def probe(s, default=Text):
