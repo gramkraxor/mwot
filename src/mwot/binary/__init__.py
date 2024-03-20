@@ -17,8 +17,8 @@ def from_bits(bits):
 @joinable()
 def to_bits(chars):
     """Convert bytes to MWOT bits."""
-    stype, chars = stypes.probe(chars, default=stypes.Bytes)
-    if stype is not stypes.Bytes:
+    stype, chars = stypes.probe(chars, default=stypes.BYTES)
+    if stype is not stypes.BYTES:
         raise TypeError('chars must be bytes')
     for byte in chars:
         for i in bitrange:

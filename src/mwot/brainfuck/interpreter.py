@@ -58,8 +58,8 @@ def run(brainfuck, infile=None, outfile=None, cellsize=8, eof=None,
     pc = 0
     pointer = 0
 
-    stype, brainfuck = stypes.probe(brainfuck, default=stypes.Bytes)
-    if stype is not stypes.Bytes:
+    stype, brainfuck = stypes.probe(brainfuck, default=stypes.BYTES)
+    if stype is not stypes.BYTES:
         raise TypeError('brainfuck must be bytes')
     if shebang_in:
         brainfuck = deshebang(brainfuck, stype)

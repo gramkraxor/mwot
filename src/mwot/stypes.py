@@ -18,7 +18,7 @@ import itertools
 
 def ask(s):
     """Ask a string for its type."""
-    for t in (Text, Bytes):
+    for t in (TEXT, BYTES):
         if t.ask(s):
             return t
     return None
@@ -26,7 +26,7 @@ def ask(s):
 
 def ask_char(char):
     """Ask a single character for its corresponding string type."""
-    for t in (Text, Bytes):
+    for t in (TEXT, BYTES):
         if t.ask_char(char):
             return t
     return None
@@ -35,9 +35,9 @@ def ask_char(char):
 def decode(s):
     """Convert a string to text."""
     stype = ask(s)
-    if stype is Text:
+    if stype is TEXT:
         return s
-    if stype is Bytes:
+    if stype is BYTES:
         return s.decode()
     raise TypeError('cannot decode non-string')
 
@@ -45,9 +45,9 @@ def decode(s):
 def encode(s):
     """Convert a string to bytes."""
     stype = ask(s)
-    if stype is Text:
+    if stype is TEXT:
         return s.encode()
-    if stype is Bytes:
+    if stype is BYTES:
         return s
     raise TypeError('cannot encode non-string')
 
@@ -55,9 +55,9 @@ def encode(s):
 def StringIO(s):
     """Create an I/O object from a string."""
     stype = ask(s)
-    if stype is Text:
+    if stype is TEXT:
         return io.StringIO(s)
-    if stype is Bytes:
+    if stype is BYTES:
         return io.BytesIO(s)
     raise TypeError('cannot open non-string')
 
@@ -113,7 +113,7 @@ class SType:
 
 
 # Unicode strings
-Text = SType(
+TEXT = SType(
     ask_fn=lambda s: isinstance(s, str),
     ask_char_fn=lambda c: isinstance(c, str) and len(c) == 1,
     buffer_fn=lambda textio: textio,
@@ -123,7 +123,7 @@ Text = SType(
     ord_fn=lambda c: chr(ord(c)),
 )
 # Byte strings
-Bytes = SType(
+BYTES = SType(
     ask_fn=lambda s: isinstance(s, (bytes, bytearray)),
     ask_char_fn=lambda c: isinstance(c, int) and c in range(256),
     buffer_fn=lambda textio: textio.buffer,
@@ -134,7 +134,7 @@ Bytes = SType(
 )
 
 
-def probe(s, default=Text):
+def probe(s, default=TEXT):
     """Probe a string-like for its type with `next(iter(s))`.
 
     Returns (`stype`, `s2`). The returned `s2` should replace `s`, since

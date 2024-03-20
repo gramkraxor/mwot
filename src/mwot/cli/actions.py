@@ -72,7 +72,7 @@ class TranspilerAction(Action):
     def write(self, f, output):
         if self.args.shebang_out and self.args.format == 'brainfuck':
             f.write(self.bf_shebang)
-        if self.stype_out is stypes.Bytes:
+        if self.stype_out is stypes.BYTES:
             for chunk in chunks(output, 80):
                 f.write(bytes(chunk))
         else:
@@ -82,8 +82,8 @@ class TranspilerAction(Action):
 
 class Compile(TranspilerAction):
 
-    stype_in = stypes.Text
-    stype_out = stypes.Bytes
+    stype_in = stypes.TEXT
+    stype_out = stypes.BYTES
     bf_shebang = b'#!/usr/bin/env -S mwot -xb\n'
 
     def transpile(self, source_code):
@@ -99,8 +99,8 @@ class Compile(TranspilerAction):
 
 class Decompile(TranspilerAction):
 
-    stype_in = stypes.Bytes
-    stype_out = stypes.Text
+    stype_in = stypes.BYTES
+    stype_out = stypes.TEXT
     bf_shebang = '#!/usr/bin/env -S mwot -ib\n'
     keywords = ('width', 'vocab', 'cols')
 
@@ -118,17 +118,17 @@ class Decompile(TranspilerAction):
 
 class InterpreterAction(Action):
 
-    stype_out = stypes.Bytes
+    stype_out = stypes.BYTES
 
     def get_input(self):
         """Retrieve the correct interpreter input source."""
         if self.args.input is not None:
             return StringSource(self.args.input.encode())
         if self.args.infile != '-':
-            return Source(self.args.infile, stypes.Bytes)
+            return Source(self.args.infile, stypes.BYTES)
         if self.args.source is None and self.args.srcfile == '-':
             return StringSource(b'')
-        return Source('-', stypes.Bytes)
+        return Source('-', stypes.BYTES)
 
     def run(self):
         source_code = self.get_source().read()
@@ -140,7 +140,7 @@ class InterpreterAction(Action):
 
 class Interpret(InterpreterAction):
 
-    stype_in = stypes.Text
+    stype_in = stypes.TEXT
     keywords = ('cellsize', 'eof', 'totalcells', 'wraparound')
 
     def execute(self, source_code):
@@ -149,7 +149,7 @@ class Interpret(InterpreterAction):
 
 class Execute(InterpreterAction):
 
-    stype_in = stypes.Bytes
+    stype_in = stypes.BYTES
     keywords = ('shebang_in', 'cellsize', 'eof', 'totalcells', 'wraparound')
 
     def execute(self, source_code):

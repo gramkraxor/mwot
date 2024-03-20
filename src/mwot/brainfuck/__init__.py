@@ -35,8 +35,8 @@ def from_bits(bits):
 @joinable()
 def to_bits(chars):
     """Convert brainfuck to MWOT bits."""
-    stype, chars = stypes.probe(chars, default=stypes.Bytes)
-    if stype is not stypes.Bytes:
+    stype, chars = stypes.probe(chars, default=stypes.BYTES)
+    if stype is not stypes.BYTES:
         raise TypeError('chars must be bytes')
     for cmd in chars:
         yield from chunkmap.get(cmd, ())
