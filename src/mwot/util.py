@@ -1,5 +1,6 @@
 """General functions, etc."""
 
+from collections import deque
 import itertools
 import warnings
 
@@ -62,3 +63,66 @@ def split(s):
 
     while word := ''.join(nextword()):
         yield word
+
+
+class Peekable:
+    """Iterator that supports far look-ahead."""
+
+    def __init__(self, iterable):
+        self._iterator = iter(iterable)
+        self._queue = deque()
+        self._peeker_ids = set()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self._peeker_ids.clear()
+        if self._queue:
+            return self._queue.popleft()
+        return next(self._iterator)
+
+    def _peeker(self, peeker_id):
+
+        def check_advanced():
+            if peeker_id not in self._peeker_ids:
+                raise RuntimeError('peeker called after peekable advanced')
+
+        check_advanced()
+        for e in self._queue:
+            yield e
+            check_advanced()
+        for e in self._iterator:
+            self._queue.append(e)
+            yield e
+            check_advanced()
+
+    def advance(self, stop):
+        """Discard at most `stop` elements."""
+        for _ in itertools.islice(self, stop):
+            pass
+
+    def peek(self, stop):
+        """Peek ahead at the next `stop` elements (at most)."""
+        if stop <= len(self._queue):
+            return tuple(itertools.islice(self._queue, stop))
+        self._queue.extend(itertools.islice(self._iterator,
+                                            stop - len(self._queue)))
+        return tuple(self._queue)
+
+    def peek1(self):
+        """Peek ahead 1 element, or raise `StopIteration`."""
+        if self._queue:
+            return self._queue[0]
+        e = next(self._iterator)
+        self._queue.append(e)
+        return e
+
+    def peeker(self):
+        """Get a peeking iterator, subordinate to self.
+
+        The iterator will break when self advances.
+        """
+        peeker_id = object()
+        self._peeker_ids.add(peeker_id)
+        return self._peeker(peeker_id)
