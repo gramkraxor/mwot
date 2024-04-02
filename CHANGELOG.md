@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.1.1] - 2024-04-02
+
+- Optimized brainfuck interpreter
+- Added `-e` alias to the `--source` option
+- Disallowed option prefixes
+
+
 ## [0.1.0] - 2022-08-25
 
 - Implemented fully-featured CLI
